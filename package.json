@@ -1,0 +1,34 @@
+{
+  "name": "mammoth-bats",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "gulp"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cjsx-loader": "~2.0.1",
+    "coffee-loader": "~0.7.2",
+    "coffee-script": "~1.9.3",
+    "del": "~1.2.0",
+    "express": "~4.13.0",
+    "gulp": "~3.9.0",
+    "gulp-changed": "~1.2.1",
+    "gulp-imagemin": "~2.3.0",
+    "gulp-notify": "~2.2.0",
+    "gulp-stylus": "~2.0.5",
+    "gulp-util": "~3.0.6",
+    "gulp-watch": "~4.2.4",
+    "jsx-loader": "~0.13.2",
+    "nib": "~1.1.0",
+    "stylus": "~0.51.1",
+    "webpack-stream": "~2.0.0"
+  },
+  "dependencies": {
+    "json-api-client": "~0.4.0",
+    "react": "0.13.3",
+    "react-router": "0.13.3",
+    "reflux": "~0.2.8"
+  }
+}
