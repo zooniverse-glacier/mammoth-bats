@@ -11,7 +11,7 @@ var path = require('path'),
     nib = require('nib'),
     imagemin = require('gulp-imagemin'),
     express = require('express'),
-    webpack = require('webpack-stream'),
+    webpack = require('webpack'),
     webpackConfig = require("./webpack.config.js");
 
 var dest = './public/build';
@@ -101,7 +101,7 @@ gulp.task('webpack', function(callback){
     callback();
 })
 
-gulp.task('watch', ['stylus', 'html', 'images'], function() {
+gulp.task('watch', ['stylus', 'html', 'images', 'webpack'], function() {
   gulp.watch(config.stylus.files, ['stylus']);
   gulp.watch(config.html.src, ['html']);
   gulp.watch(config.images.src, ['images']);
