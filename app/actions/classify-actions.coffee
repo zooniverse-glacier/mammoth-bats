@@ -3,8 +3,7 @@ PanoptesClient = require 'panoptes-client'
 
 config = require '../api/config'
 
-ProjectStore = Reflux.createStore
+ClassifyActions = Reflux.createActions
 
 
-
-module.exports = ProjectStore
+module.exports = ClassifyActions
