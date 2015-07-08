@@ -5,7 +5,6 @@ Reflux = require 'reflux'
 BatsClient = require './api/bats-client'
 {api} = require './api/bats-client'
 {auth} = require './api/bats-client'
-userStore = require './stores/user-store'
 PromiseToSetState = require './lib/promise-to-set-state'
 
 MainHeader = require './partials/main-header'
@@ -23,10 +22,13 @@ Main = React.createClass
     @handleAuthChange()
     auth.listen @handleAuthChange
 
+
   getProject: ->
     api.type('projects').get('865')
       .then (batProject) =>
-        @setState project: batProject, -> console.log 'batProject', batProject
+        @setState project: batProject, ->
+          console.log 'batProject', batProject
+          window.batsProject = @state.project
 
   componentWillUnmount: ->
     auth.stopListening @handleAuthChange
@@ -43,6 +45,8 @@ Main = React.createClass
 routes =
   <Route name="root" path="/" handler={Main}>
     <DefaultRoute handler={require './pages/home'} />
+
+    <Route name="classify" path="classify" handler={require './pages/classify'} />
   </Route>
 
 Router.run routes, (Handler) ->
