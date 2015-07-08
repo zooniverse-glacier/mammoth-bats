@@ -22,7 +22,6 @@ Main = React.createClass
     @handleAuthChange()
     auth.listen @handleAuthChange
 
-
   getProject: ->
     api.type('projects').get('865')
       .then (batProject) =>

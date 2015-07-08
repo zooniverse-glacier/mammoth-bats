@@ -1,7 +1,78 @@
 .classify-page
-  margin: 0 auto
-  max-width: 1024px
+  background-color: rgb(237, 237, 236)
   padding: 1em 3vw
 
   .classification
     display: flex
+    justify-content: center
+
+    .subject
+      display: inline-flex
+      flex: 1 1 75%
+      justify-content: center
+
+      img //placeholder
+        width: 400px
+        height: 400px
+
+    .questions-container
+      background-color: white
+      display: inline-flex
+      flex-direction: column
+      justify-content: space-between
+      flex: 1 1 25%
+      margin: 0 1em
+      padding: 1em
+
+      .task-container
+        background-color: rgb(237, 237, 236)
+        border-radius: 6px
+        margin-bottom: 1em
+
+        .task-question, .task-button
+          @extends $reset-button
+          outline: none
+          padding: 1em
+          text-align: left
+          width: 100%
+
+        .task-fade-enter, .task-fade-appear, .task-fade-leave.task-fade-leave-active
+          height: 0
+          opacity: 0
+          transition: height 0.75s, opacity 0.75s ease-in-out
+
+        .task-fade-enter.task-fade-enter-active, .task-fade-appear.task-fade-appear-active
+          height: 100%
+          opacity: 1
+
+        .task-fade-leave
+          height: 100%
+          opacity: 1
+          transition: height 0.75s, opacity 0.75s ease-in-out
+
+        .task
+          .task-button
+            background-color: lightgrey
+            border-radius: 6px
+            margin: 0.5em
+            padding: 1em
+            text-align: center
+            width: 95%
+
+          .task-checkbox
+            background-color: lightgrey
+            border-radius: 6px
+            display: block
+            padding: 0.5em 1em
+            margin: 0.5em
+
+      .action-button
+        @extends $reset-button
+        background-color: rgb(176, 174, 174)
+        border-radius: 6px
+        font-size: 0.7em
+        font-weight: 700
+        letter-spacing: 0.1em
+        padding: 1em
+        text-align: center
+        text-transform: uppercase
