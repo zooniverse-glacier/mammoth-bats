@@ -4,8 +4,6 @@ counterpart = require 'counterpart'
 classifyActions = '../actions/classify-actions'
 
 ClassifyStore = Reflux.createStore
-  listenables: classifyActions
-
   project: {}
   data:
     workflow: {}
@@ -13,12 +11,14 @@ ClassifyStore = Reflux.createStore
     classification: {}
 
   init: ->
-    @getProject()
+    console.log 'store init called'
+    @listenToMany classifyActions
 
   getInitialState: ->
-    data: @data
+    classificationData: @data
 
   getProject: ->
+    console.log 'get project called'
     api.type('projects').get('865')
       .then (batProject) =>
         @project = batProject

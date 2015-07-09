@@ -1,10 +1,13 @@
 React = require 'react/addons'
 ReactCSSTransitionGroup = React.addons.CSSTransitionGroup
-Reflux = require 'reflux'
-classifyStore = require '../stores/classify-store'
+
 counterpart = require 'counterpart'
 Translate = require 'react-translate-component'
 LoadingIndicator = require '../components/loading-indicator'
+
+Reflux = require 'reflux'
+classifyStore = require '../stores/classify-store'
+classifyActions = require '../actions/classify-actions'
 
 counterpart.registerTranslations 'en',
   classifyPage:
@@ -38,48 +41,45 @@ Task = React.createClass
 
 module.exports = React.createClass
   displayName: "Classify"
-  mixins: [Reflux.ListenerMixin]
+  mixins: [Reflux.connect(classifyStore, "classificationData")]
 
   getInitialState: ->
-    data: {}
     taskID: ''
-    loading: true
 
-  componentDidMount: ->
-    console.log 'state before listenTo', @state
-    @listenTo classifyStore, @setData
-
-  setData: (data) ->
-    console.log 'setdata', data
-    @setState
-      data: data
-      loading: false
+  componentWillMount: ->
+    console.log 'will mount', classifyActions
+    classifyActions.getProject()
 
   render: ->
     <div className="classify-page">
       <h1>Classify</h1>
-      {if @state.loading is true
-        <div style={height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}>
-          <LoadingIndicator />
-        </div>
-      else
         <div className="classification">
           <section className="subject">
-            <img src={@state.data.subject.locations[0]["image/gif"]} />
+            {if @state.classificationData.subject?
+              <img src={@state.classificationData.subject?.locations[0]["image/gif"]} />
+            else
+              <div style={width: '400px', height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center'}>
+                <LoadingIndicator />
+              </div>
+            }
           </section>
           <section className="questions-container">
             <div className="questions">
-              {for taskID, task of @state.data.workflow?.tasks
-                <div key={taskID} className="task-container">
-                  <button className="task-question" type="button" onClick={@showTask.bind(null, taskID)}>{task.question}</button>
-                  {<Task task={task} /> if @state.taskID is taskID}
+              {if @state.classificationData.workflow?
+                for taskID, task of @state.classificationData.workflow?.tasks
+                  <div key={taskID} className="task-container">
+                    <button className="task-question" type="button" onClick={@showTask.bind(null, taskID)}>{task.question}</button>
+                    {<Task task={task} /> if @state.taskID is taskID}
+                  </div>
+              else
+                <div style={display: 'flex', justifyContent: 'center', alignItems: 'center'}>
+                  <LoadingIndicator />
                 </div>
               }
             </div>
             <button className="action-button" type="button" onClick={@finishClassification}><Translate content="classifyPage.buttons.finish" /></button>
           </section>
         </div>
-      }
     </div>
 
   showTask: (taskID) ->

@@ -3,8 +3,9 @@ PanoptesClient = require 'panoptes-client'
 
 config = require '../api/config'
 
-ClassifyActions = Reflux.createActions
-  children: ['getProject', 'getWorkflow']
-
+ClassifyActions = Reflux.createActions([
+  "getProject",
+  "createNewClassification"
+])
 
 module.exports = ClassifyActions
