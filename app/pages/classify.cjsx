@@ -65,7 +65,7 @@ module.exports = React.createClass
       else
         <div className="classification">
           <section className="subject">
-            <img src="http://placehold.it/400x400" />
+            <img src={@state.data.subject.locations[0]["image/gif"]} />
           </section>
           <section className="questions-container">
             <div className="questions">

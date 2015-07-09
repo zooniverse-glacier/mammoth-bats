@@ -30,12 +30,14 @@ ClassifyStore = Reflux.createStore
         @getSubject(workflow)
 
   getSubject: (workflow) ->
-    workflow.get('subject_sets')
-      .then ([subject_set]) =>
-        subject = subject: 'subject', id: 1
-        @createNewClassification(workflow, subject_set, subject)
+    randomInt = Math.floor(Math.random() * 4) #random num 0-3, temporarily only 4 subjects atm
 
-  createNewClassification: (workflow, subjectSet, subject) ->
+    api.type('subjects').get(workflow_id: workflow.id, sort: 'queued')
+      .then (subjects) =>
+        subject = subjects[randomInt]
+        @createNewClassification(workflow, subject)
+
+  createNewClassification: (workflow, subject) ->
     classification = api.type('classification').create
       annotations: []
       metadata:
