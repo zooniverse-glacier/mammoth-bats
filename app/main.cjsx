@@ -8,6 +8,7 @@ BatsClient = require './api/bats-client'
 PromiseToSetState = require './lib/promise-to-set-state'
 
 MainHeader = require './partials/main-header'
+MainFooter = require './partials/main-footer'
 
 Main = React.createClass
   displayName: "Main"
@@ -39,6 +40,7 @@ Main = React.createClass
     <div className="main">
       <MainHeader project={@state.project} user={@state.user} auth={auth} api={api} />
       <RouteHandler project={@state.project} user={@state.user} auth={auth} api={api} />
+      <MainFooter />
     </div>
 
 routes =

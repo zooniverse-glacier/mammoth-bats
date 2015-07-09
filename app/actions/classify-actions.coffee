@@ -4,7 +4,7 @@ PanoptesClient = require 'panoptes-client'
 config = require '../api/config'
 
 ClassifyActions = Reflux.createActions
-  children: ['fetchWorkflow']
+  children: ['getWorkflow']
 
 
 module.exports = ClassifyActions

@@ -11,9 +11,9 @@ module.exports = React.createClass
 
   render: ->
     <header className="main-header">
-      <Link to="root"><ZooniverseLogo /></Link>
-      <nav>
-        <Link to="classify">Classify</Link>
+      <Link className="main-header-logo-link" to="root"><ZooniverseLogo /></Link>
+      <nav className="main-header-nav">
+        <Link to="classify" className="main-header-link">Classify</Link>
       </nav>
       {if @props.user
         <AccountBar user={@props.user} auth={@props.auth} />
