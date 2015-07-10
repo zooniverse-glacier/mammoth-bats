@@ -17,25 +17,22 @@ counterpart.registerTranslations 'en',
 Task = React.createClass
   displayName: 'Task'
 
-  storeSelection: (answer) ->
-    console.log 'answer', answer
-
   render: ->
     <ReactCSSTransitionGroup transitionName="task-fade" transitionAppear={true}>
       <div className="task">
-          {switch @props.task.type
-            when "multiple"
-              for answer in @props.task.answers
-                <label key={answer.label} className="task-checkbox">
-                  <input type="checkbox" name={@props.task.question} value={answer.label} onClick={@storeSelection.bind(@, answer.label)} />
-                  {answer.label}
-                </label>
-            when "single"
-              for answer in @props.task.answers
-                <button key={answer.label} type="button" className="task-button" value={answer.label} onClick={@storeSelection.bind(@, answer.label)}>
-                  {answer.label}
-                </button>
-          }
+        {switch @props.task.type
+          when "multiple"
+            for answer in @props.task.answers
+              <label key={answer.label} className="task-checkbox">
+                <input type="checkbox" name={@props.task.question} value={answer.label} onClick={@props.storeSelection.bind(null, @props.task.question, answer.label)} />
+                {answer.label}
+              </label>
+          when "single"
+            for answer in @props.task.answers
+              <button key={answer.label} type="button" className="task-button" value={answer.label} onClick={@props.storeSelection.bind(null, @props.task.question, answer.label)}>
+                {answer.label}
+              </button>
+        }
       </div>
     </ReactCSSTransitionGroup>
 
@@ -65,7 +62,7 @@ module.exports = React.createClass
                 for taskID, task of @state.classificationData?.workflow?.tasks
                   <div key={taskID} className="task-container">
                     <button className="task-question" type="button" onClick={@showTask.bind(null, taskID)}>{task.question}</button>
-                    {<Task task={task} /> if @state.taskID is taskID}
+                    {<Task task={task} storeSelection={@storeSelection} /> if @state.taskID is taskID}
                   </div>
               else
                 <div style={display: 'flex', justifyContent: 'center', alignItems: 'center'}>
@@ -80,6 +77,13 @@ module.exports = React.createClass
 
   showTask: (taskID) ->
     @setState taskID: taskID
+
+  storeSelection: (question, answer) ->
+    console.log question, answer
+    question = question.replace(/\s+/g, '')
+    answerObj = {}
+    answerObj[question] = answer
+    classifyActions.updateAnnotation(answer)
 
   finishClassification: ->
     console.log 'finished!'

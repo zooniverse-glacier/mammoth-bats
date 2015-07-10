@@ -1,13 +1,14 @@
 Reflux = require 'reflux'
 counterpart = require 'counterpart'
 {api} = require '../api/bats-client'
-classifyActions = '../actions/classify-actions'
+classifyActions = require '../actions/classify-actions'
 
 ClassifyStore = Reflux.createStore
-  listenables: [classifyActions]
+  listenables: classifyActions
 
   init: ->
     @getProject()
+    console.log @listenables
 
   getInitialState: ->
     @data
@@ -55,5 +56,10 @@ ClassifyStore = Reflux.createStore
 
     @trigger @data
 
+  onUpdateAnnotation: (answer) ->
+    annotation = @data?.classification.annotations
+    annotation.push answer
+
+    @trigger @data
 
 module.exports = ClassifyStore
