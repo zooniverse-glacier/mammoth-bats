@@ -46,17 +46,13 @@ module.exports = React.createClass
   getInitialState: ->
     taskID: ''
 
-  componentWillMount: ->
-    console.log 'will mount', classifyActions
-    classifyActions.getProject()
-
   render: ->
     <div className="classify-page">
       <h1>Classify</h1>
         <div className="classification">
           <section className="subject">
-            {if @state.classificationData.subject?
-              <img src={@state.classificationData.subject?.locations[0]["image/gif"]} />
+            {if @state.classificationData?.subject?
+              <img src={@state.classificationData?.subject?.locations[0]["image/gif"]} />
             else
               <div style={width: '400px', height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center'}>
                 <LoadingIndicator />
@@ -65,8 +61,8 @@ module.exports = React.createClass
           </section>
           <section className="questions-container">
             <div className="questions">
-              {if @state.classificationData.workflow?
-                for taskID, task of @state.classificationData.workflow?.tasks
+              {if @state.classificationData?.workflow?
+                for taskID, task of @state.classificationData?.workflow?.tasks
                   <div key={taskID} className="task-container">
                     <button className="task-question" type="button" onClick={@showTask.bind(null, taskID)}>{task.question}</button>
                     {<Task task={task} /> if @state.taskID is taskID}
