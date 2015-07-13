@@ -12,6 +12,7 @@ classifyActions = require '../actions/classify-actions'
 counterpart.registerTranslations 'en',
   classifyPage:
     buttons:
+      next: "next"
       finish: "finished!"
 
 Task = React.createClass
@@ -19,29 +20,82 @@ Task = React.createClass
 
   render: ->
     <ReactCSSTransitionGroup transitionName="task-fade" transitionAppear={true}>
+      {console.log 'task', @props.task}
       <div className="task">
+        <h3>{@props.task.question}</h3>
         {switch @props.task.type
           when "multiple"
             for answer in @props.task.answers
               <label key={answer.label} className="task-checkbox">
-                <input type="checkbox" name={@props.task.question} value={answer.label} onClick={@props.storeSelection.bind(null, @props.task.question, answer.label)} />
+                <input type="checkbox" name={@props.task.question} value={answer.label} onClick={@props.storeMultipleSelection.bind(null, @props.task.question, answer.label, @props.task.next)} />
                 {answer.label}
               </label>
           when "single"
             for answer in @props.task.answers
-              <button key={answer.label} type="button" className="task-button" value={answer.label} onClick={@props.storeSelection.bind(null, @props.task.question, answer.label)}>
+              <button key={answer.label} type="button" className="task-button" value={answer.label} onClick={@props.storeSelection.bind(null, @props.task.question, answer.label, answer.next)}>
                 {answer.label}
               </button>
+        }
+        {unless @props.lastTask
+          <button className="action-button" type="button" onClick={@props.showTask.bind(null, @props.nextTask)} disabled={@props.nextTask is null}>
+            <Translate content="classifyPage.buttons.next" />
+          </button>
+        else
+          <button className="action-button" type="button" onClick={@props.onClickFinish}>
+            <Translate content="classifyPage.buttons.finish" />
+          </button>
         }
       </div>
     </ReactCSSTransitionGroup>
 
 module.exports = React.createClass
   displayName: "Classify"
-  mixins: [Reflux.connect(classifyStore, "classificationData")]
+  mixins: [Reflux.ListenerMixin, Reflux.connect(classifyStore, "classificationData")]
 
   getInitialState: ->
-    taskID: ''
+    taskKey: ''
+    nextTask: null
+    multipleSelectionAnswers: []
+
+  componentDidMount: ->
+    console.log 'mounting'
+    @listenTo classifyStore, (classificationData) ->
+      @setState taskKey: classificationData?.workflow?.first_task
+
+  showTask: (taskKey) ->
+    console.log 'taskkey on showtask', taskKey
+    @setState
+      taskKey: taskKey
+      nextTask: null
+
+  storeMultipleSelection: (question, answer, nextTask) ->
+    console.log nextTask
+    currentAnswers = @state.multipleSelectionAnswers
+    index = currentAnswers.indexOf(answer)
+
+    if index > -1
+      currentAnswers.splice index, 1
+      @setState({multipleSelectionAnswers: currentAnswers}, -> @storeSelection(question, @state.multipleSelectionAnswers, nextTask))
+    else
+      currentAnswers.push answer
+      @setState({multipleSelectionAnswers: currentAnswers}, -> @storeSelection(question, @state.multipleSelectionAnswers, nextTask))
+
+  storeSelection: (question, answer, nextTask) ->
+    console.log question, answer, nextTask
+    question = question.replace(/\s+/g, '')
+    @setState nextTask: nextTask, ->
+      classifyActions.updateAnnotation("#{question}": answer)
+
+  onClickFinish: ->
+    console.log 'finished!', @state.classificationData.classification.annotations
+    classifyActions.finishClassification()
+    @clearMultipleSelection()
+
+  clearMultipleSelection: ->
+    @setState multipleSelectionAnswers: []
+
+  checkIfLastTask: ->
+
 
   render: ->
     <div className="classify-page">
@@ -59,10 +113,19 @@ module.exports = React.createClass
           <section className="questions-container">
             <div className="questions">
               {if @state.classificationData?.workflow?
-                for taskID, task of @state.classificationData?.workflow?.tasks
-                  <div key={taskID} className="task-container">
-                    <button className="task-question" type="button" onClick={@showTask.bind(null, taskID)}>{task.question}</button>
-                    {<Task task={task} storeSelection={@storeSelection} /> if @state.taskID is taskID}
+                for taskKey, task of @state.classificationData.workflow.tasks
+                  <div key={taskKey} className="task-container">
+                    {if @state.taskKey is taskKey
+                      <Task
+                        task={task}
+                        nextTask={@state.nextTask}
+                        lastTask={@state.taskKey is Object.keys(@state.classificationData.workflow.tasks).pop()}
+                        storeSelection={@storeSelection}
+                        storeMultipleSelection={@storeMultipleSelection}
+                        showTask={@showTask}
+                        onClickFinish={@onClickFinish}
+                      />
+                    }
                   </div>
               else
                 <div style={display: 'flex', justifyContent: 'center', alignItems: 'center'}>
@@ -70,20 +133,6 @@ module.exports = React.createClass
                 </div>
               }
             </div>
-            <button className="action-button" type="button" onClick={@finishClassification}><Translate content="classifyPage.buttons.finish" /></button>
           </section>
         </div>
     </div>
-
-  showTask: (taskID) ->
-    @setState taskID: taskID
-
-  storeSelection: (question, answer) ->
-    console.log question, answer
-    question = question.replace(/\s+/g, '')
-    answerObj = {}
-    answerObj[question] = answer
-    classifyActions.updateAnnotation(answer)
-
-  finishClassification: ->
-    console.log 'finished!'

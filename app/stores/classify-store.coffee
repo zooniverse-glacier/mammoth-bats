@@ -1,5 +1,6 @@
 Reflux = require 'reflux'
 counterpart = require 'counterpart'
+_ = require 'underscore'
 {api} = require '../api/bats-client'
 classifyActions = require '../actions/classify-actions'
 
@@ -34,7 +35,7 @@ ClassifyStore = Reflux.createStore
 
   createNewClassification: (workflow, subject) ->
     classification = api.type('classification').create
-      annotations: []
+      annotations: {}
       metadata:
         workflow_version: workflow.version
         started_at: (new Date).toISOString()
@@ -57,9 +58,29 @@ ClassifyStore = Reflux.createStore
     @trigger @data
 
   onUpdateAnnotation: (answer) ->
-    annotation = @data?.classification.annotations
-    annotation.push answer
+    annotations = @data?.classification.annotations
+
+    _.extend annotations, answer
+    console.log 'annotation', annotations
 
     @trigger @data
+
+  finishClassification: ->
+    @data?.classification.update
+      completed: true
+      'metadata.finished_at': (new Date).toISOString()
+      'metadata.viewport':
+        width: innerWidth
+        height: innerHeight
+
+    console.log @data.classification
+    @saveClassification()
+
+  saveClassification: ->
+    console.log 'calling save'
+    @data?.classification.save().then (classification) ->
+      console.log 'saved'
+      classification.destroy()
+      @getSubject(@data?.workflow)
 
 module.exports = ClassifyStore

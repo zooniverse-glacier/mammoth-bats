@@ -2,10 +2,8 @@ Reflux = require 'reflux'
 
 ClassifyActions = Reflux.createActions({
   createNewClassification: "createNewClassification",
-  updateAnnotation: "updateAnnotation"
+  updateAnnotation: "updateAnnotation",
+  finishClassification: "finishClassification"
 })
-
-ClassifyActions.updateAnnotation.listen ->
-  console.log 'updateAnnotation called'
 
 module.exports = ClassifyActions
