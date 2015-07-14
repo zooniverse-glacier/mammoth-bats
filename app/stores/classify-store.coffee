@@ -9,7 +9,6 @@ ClassifyStore = Reflux.createStore
 
   init: ->
     @getProject()
-    console.log @listenables
 
   getInitialState: ->
     @data
@@ -61,7 +60,7 @@ ClassifyStore = Reflux.createStore
     annotations = @data?.classification.annotations
 
     _.extend annotations, answer
-    console.log 'annotation', annotations
+    console.log 'update annotation', annotations
 
     @trigger @data
 
@@ -73,13 +72,11 @@ ClassifyStore = Reflux.createStore
         width: innerWidth
         height: innerHeight
 
-    console.log @data.classification
     @saveClassification()
 
   saveClassification: ->
-    console.log 'calling save'
     @data?.classification.save().then (classification) ->
-      console.log 'saved'
+      console.log 'saved', classification
       classification.destroy()
       @getSubject(@data?.workflow)
 
