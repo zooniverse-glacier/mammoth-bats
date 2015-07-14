@@ -1,9 +1,12 @@
 .main-header
   align-items: center
-  background-color: black
+  background-color: transparent
+  box-sizing: border-box
   display: flex
   justify-content: space-between
   padding: 1em 3vw
+  position: fixed
+  width: 100%
 
   .main-header-logo-link
     flex: 0 0 25px
@@ -15,7 +18,7 @@
     flex: 1 1 auto
 
     .main-header-link
-      background-color: black
+      background-color: transparent
       color: white
       padding: 0.5em 1em
       text-decoration: none
@@ -25,7 +28,7 @@
         border-radius: 15px
 
       &:hover
-        background-color: lighten(#000000, 30%)
+        background-color: lighten(#000000, 20%)
 
       &:visited
         color: white

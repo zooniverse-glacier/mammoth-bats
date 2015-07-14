@@ -1,5 +1,6 @@
 React = require 'react/addons'
 ReactCSSTransitionGroup = React.addons.CSSTransitionGroup
+_ = require 'underscore'
 
 counterpart = require 'counterpart'
 Translate = require 'react-translate-component'
@@ -128,34 +129,44 @@ module.exports = React.createClass
 
   render: ->
     <div className="classify-page">
-      <h1>Classify</h1>
-        <div className="classification">
-          <section className="subject">
-            {if @state.classificationData?.subject?
-              <img src={@state.classificationData?.subject?.locations[0]["image/gif"]} />
-            else
-              <div style={width: '400px', height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center'}>
-                <LoadingIndicator />
-              </div>
-            }
-          </section>
-          <section className="questions-container">
-            {if @state.classificationData?.workflow?.tasks? and @state.firstTask?
-              <div className="task-container">
-                <Task
-                  firstTask={@state.firstTask}
-                  workflow={@state.classificationData?.workflow}
-                  annotations={@state.classificationData?.classification.annotations}
-                  storeSelection={@storeSelection}
-                  storeMultipleSelection={@storeMultipleSelection}
-                  clearMultipleSelection={@clearMultipleSelection}
-                />
-              </div>
-            else
-              <div style={display: 'flex', justifyContent: 'center', alignItems: 'center'}>
-                <LoadingIndicator />
-              </div>
-            }
-          </section>
-        </div>
+      <div className="classification">
+        <section className="subject">
+          {if @state.classificationData?.subject?
+            mediaSrcs = {}
+            @state.classificationData?.subject?.locations.map (location, i) ->
+              mediaSrcs["#{Object.keys(location)[0]}"] = location["#{Object.keys(location)[0]}"]
+
+            console.log 'videoSrc', mediaSrcs
+            <video
+              src={mediaSrcs["video/mp4"]}
+              poster={mediaSrcs["image/jpeg"]}
+              type="video/mp4"
+            >
+              Your browser does not support the video format. Please upgrade your browser.
+            </video>
+          else
+            <div style={width: '400px', height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center'}>
+              <LoadingIndicator />
+            </div>
+          }
+        </section>
+        <section className="questions-container">
+          {if @state.classificationData?.workflow?.tasks? and @state.firstTask?
+            <div className="task-container">
+              <Task
+                firstTask={@state.firstTask}
+                workflow={@state.classificationData?.workflow}
+                annotations={@state.classificationData?.classification.annotations}
+                storeSelection={@storeSelection}
+                storeMultipleSelection={@storeMultipleSelection}
+                clearMultipleSelection={@clearMultipleSelection}
+              />
+            </div>
+          else
+            <div style={display: 'flex', justifyContent: 'center', alignItems: 'center'}>
+              <LoadingIndicator />
+            </div>
+          }
+        </section>
+      </div>
     </div>

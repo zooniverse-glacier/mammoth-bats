@@ -22,13 +22,16 @@ ClassifyStore = Reflux.createStore
   getWorkflow: (project) ->
     project.get('workflows')
       .then ([workflow]) =>
-        @getSubject(workflow)
+        workflow.get('subject_sets').then ([subject_sets]) =>
+          console.log subject_sets.id
+          @getSubject(workflow, subject_sets.id)
 
-  getSubject: (workflow) ->
-    randomInt = Math.floor(Math.random() * 4) #random num 0-3, temporarily only 4 subjects atm
+  getSubject: (workflow, subjectSetID) ->
+    randomInt = Math.floor(Math.random() * 20) #random num 0-19
 
-    api.type('subjects').get(workflow_id: workflow.id, sort: 'queued')
+    api.type('subjects').get(workflow_id: workflow.id, subject_set_id: subjectSetID)
       .then (subjects) =>
+        console.log 'subjects', subjects, subjects[randomInt]
         subject = subjects[randomInt]
         @createNewClassification(workflow, subject)
 
