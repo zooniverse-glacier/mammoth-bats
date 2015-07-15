@@ -13,7 +13,7 @@ classifyActions = require '../actions/classify-actions'
 counterpart.registerTranslations 'en',
   classifyPage:
     buttons:
-      next: "next"
+      next: "next question"
       finish: "finished!"
 
 Task = React.createClass
@@ -21,12 +21,18 @@ Task = React.createClass
 
   getInitialState: ->
     currentTask: null
-    nextTask: null
+    nextTask: "T2"
+    numberInput: "0"
 
   componentDidMount: ->
     @setState currentTask: @props.firstTask
 
   showTask: (nextTask) ->
+    if @state.currentTask is "T0"
+      @props.storeSelection(@state.currentTask, @state.numberInput)
+      if @state.numberInput is "0"
+        @props.storeSelection("T1", "N/A")
+
     @setState({
       currentTask: nextTask
       nextTask: null}, -> @props.clearMultipleSelection())
@@ -39,6 +45,44 @@ Task = React.createClass
       @setOptionsState(event.target) if @state.currentTask is "T2" # Add animal step
     else if taskType is "single"
       @props.storeSelection(question, answer)
+
+  onClickMinus: ->
+    numberInput = @state.numberInput
+    console.log 'clicky minus', numberInput
+    if numberInput is "0"
+      numberInput
+    else if numberInput is "5+"
+      numberInput = "4"
+    else
+      numberInput--
+    # @setState nextTask: nextTask
+    console.log 'subtraction', @state
+    @setState({
+      numberInput: numberInput}, -> @getNextTask())
+
+  onClickPlus: ->
+    numberInput = @state.numberInput
+    console.log 'clicky plus', numberInput
+    if numberInput is 4
+      numberInput = "5+"
+    else if numberInput is "5+"
+      numberInput
+    else
+      numberInput++
+    # @setState nextTask: nextTask
+    console.log 'addition', @state
+    @setState({
+      numberInput: numberInput}, -> @getNextTask())
+
+  getNextTask: ->
+    nextTask = ''
+    numberInput = @state.numberInput.toString()
+
+    for answer in @props.workflow.tasks[@state.currentTask].answers
+      if numberInput is answer.label
+        nextTask = answer.next
+    console.log 'nextTask', nextTask
+    @setState nextTask: nextTask, -> console.log 'state', @state
 
   setOptionsState: (checkedSelection) ->
     inputs = React.findDOMNode(@).querySelectorAll('input')
@@ -69,21 +113,23 @@ Task = React.createClass
     <ReactCSSTransitionGroup transitionName="task-fade" transitionAppear={true}>
       {if @state.currentTask?
         <div className="task">
-          <h3>{task.question}</h3>
-          {for answer in task.answers
-            switch task.type
-              when "multiple"
+          <p className="question">{task.question}</p>
+          {switch task.type
+            when "multiple"
+              for answer in task.answers
                 <label key={answer.label} className="task-checkbox">
                   <input type="checkbox" name={task.question} value={answer.label} onClick={@handleClick.bind(null, @state.currentTask, answer.label, task.type, task.next)} />
                   {answer.label}
                 </label>
-              when "single"
-                <button key={answer.label} type="button" className="task-button" value={answer.label} onClick={@handleClick.bind(null, @state.currentTask, answer.label, task.type, answer.next)}>
-                  {answer.label}
-                </button>
+            when "single"
+              <fieldset>
+                <button type="button" className="minus-button" value="-" onClick={@onClickMinus}>-</button>
+                <input ref="numberInput" type="text" className="number-input" readOnly value={@state.numberInput} />
+                <button type="button" className="plus-button" value="+" onClick={@onClickPlus}>+</button>
+              </fieldset>
           }
           {unless @state.currentTask is Object.keys(@props.workflow.tasks).pop()
-            <button ref="nextButton" className="action-button" type="button" onClick={@showTask.bind(null, @state.nextTask)} disabled={@props.annotations["T1"]?.length is 0 or !@props.annotations.hasOwnProperty(@state.currentTask)}>
+            <button ref="nextButton" className="action-button" type="button" onClick={@showTask.bind(null, @state.nextTask)} disabled={@state.currentTask is "T1" and (@props.annotations["T1"]?.length is 0 or !@props.annotations.hasOwnProperty("T1"))}>
               <Translate content="classifyPage.buttons.next" />
             </button>
           else
@@ -138,6 +184,7 @@ module.exports = React.createClass
 
             console.log 'videoSrc', mediaSrcs
             <video
+              controls
               src={mediaSrcs["video/mp4"]}
               poster={mediaSrcs["image/jpeg"]}
               type="video/mp4"
@@ -151,6 +198,7 @@ module.exports = React.createClass
           }
         </section>
         <section className="questions-container">
+          <img className="batman-placeholder" src="./assets/batman-placeholder.png" alt="bat icon placeholder" />
           {if @state.classificationData?.workflow?.tasks? and @state.firstTask?
             <div className="task-container">
               <Task
