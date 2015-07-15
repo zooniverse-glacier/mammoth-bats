@@ -88,18 +88,25 @@ Task = React.createClass
     if checkedSelection.value is "None"
       for input in inputs
         if checkedSelection.checked is true
-          input.disabled = true unless input.checked is true
+          unless input.checked is true
+            input.disabled = true 
+            input.parentNode.classList.add 'disabled'
         else
           input.disabled = false
+          input.parentNode.classList.remove 'disabled'
     else
       for input in inputs
         if checkedSelection.checked is true
-          input.disabled = true if input.value is "None"
+          if input.value is "None"
+            input.disabled = true 
+            input.parentNode.classList.add 'disabled'
         else
           if @props.annotations[@state.currentTask].length is 0
             input.disabled = false if input.value is "None"
+            input.parentNode.classList.remove 'disabled'
           else
             input.disabled = true if input.value is "None"
+            input.parentNode.classList.add 'disabled'
 
   onClickFinish: ->
     console.log 'finished!'
@@ -114,11 +121,13 @@ Task = React.createClass
           <p className="question">{task.question}</p>
           {switch task.type
             when "multiple"
-              for answer in task.answers
-                <label key={answer.label} className="task-checkbox">
-                  <input type="checkbox" name={task.question} value={answer.label} onClick={@handleClick.bind(null, @state.currentTask, answer.label, task.type, task.next)} />
-                  {answer.label}
-                </label>
+              <div className="task-checkbox-container">
+                {for answer in task.answers
+                  <label key={answer.label} className="task-checkbox">
+                    <input type="checkbox" name={task.question} value={answer.label} onClick={@handleClick.bind(null, @state.currentTask, answer.label, task.type, task.next)} />
+                    {answer.label}
+                  </label>}
+              </div>
             when "single"
               <fieldset>
                 <button type="button" className="minus-button" value="-" onClick={@onClickMinus}>-</button>
@@ -134,9 +143,11 @@ Task = React.createClass
               </button>
             </div>
           else
-            <button ref="finishButton" className="action-button" type="button" onClick={@onClickFinish} disabled={@props.annotations["T2"]?.length is 0 or !@props.annotations.hasOwnProperty(@state.currentTask)}>
-              <Translate content="classifyPage.buttons.finish" />
-            </button>
+            <div className="workflow-action">
+              <button ref="finishButton" className="action-button" type="button" onClick={@onClickFinish} disabled={@props.annotations["T2"]?.length is 0 or !@props.annotations.hasOwnProperty(@state.currentTask)}>
+                <Translate content="classifyPage.buttons.finish" />
+              </button>
+            </div>
           }
       </div>}
     </ReactCSSTransitionGroup>
