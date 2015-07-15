@@ -5,24 +5,59 @@
   .classification
     display: flex
     justify-content: center
+    flex-wrap: wrap
     margin: 0 auto
     max-width: 1200px
 
     .subject
+      background-color: black
+      border-bottom-left-radius: 6px
+      border-top-left-radius: 6px
       display: inline-flex
-      flex: 1 1 66%
+      flex: 0 1 66%
       justify-content: center
+      max-width: 800px
 
-      img //placeholder
+      .video-container
+        display: inline-flex
+        flex-direction: column
+        justify-content: center
+        position: relative
         width: 100%
-        max-height: 600px
-
+        
+        video
+          background-color: black
+          
+        .playback-rate-controls
+          bottom: -2em
+          position: absolute
+          
+          .playback-button
+            @extends $reset-button
+            background-color: transparent
+            border: solid 2px #92a2b3
+            border-radius: 4px
+            color: #92a2b3
+            font-size: 0.8em
+            letter-spacing: 0.1em
+            margin-right: 0.5em
+            outline: none
+            padding: 0.075em 0.25em
+          
+          .playback-controls-label
+            color: rgba(146, 175, 205, 0.3)
+            font-style: italic
+            font-size: 0.8em
+        
     .questions-container
       background-color: white
+      border-bottom-right-radius: 6px
+      border-top-right-radius: 6px
       display: inline-flex
+      flex: 0 1 33%
       flex-direction: column
       justify-content: flex-start
-      flex: 1 1 33%
+      max-width: 350px
       padding: 1em
       
       .batman-placeholder
@@ -32,6 +67,7 @@
 
       .task-container
         border-radius: 6px
+        height: 30em
         margin-bottom: 1em
 
         .task-question, .task-button
@@ -56,12 +92,19 @@
           transition: height 0.75s, opacity 0.75s ease-in-out
 
         .task
+          align-items: center
+          display: inline-flex
+          flex-direction: column
+          height: 100%
+          justify-content: space-between
+          
           .question
             font-weight: 700
             text-align: center
             
           fieldset
             border: none
+            margin: 2em 0
             text-align: center
             
             .number-input
@@ -99,13 +142,31 @@
             padding: 0.5em 1em
             margin: 0.5em
 
-      .action-button
-        @extends $reset-button
-        background-color: rgb(176, 174, 174)
-        border-radius: 6px
-        font-size: 0.7em
-        font-weight: 700
-        letter-spacing: 0.1em
-        padding: 1em
-        text-align: center
-        text-transform: capitalize
+      .workflow-action
+        .help-text
+          color: rgba(0, 0, 0, 0.5)
+          font-style: italic
+          position: relative
+          text-align: center
+          
+          &:after
+            border-left: 5px solid transparent
+            border-right: 5px solid transparent
+            border-top: 5px solid rgba(0, 0, 0, 0.5)
+            bottom: -0.5em
+            content: ''
+            left: 50%
+            height: 0 
+            position: absolute
+            width: 0 
+          
+        .action-button
+          @extends $reset-button
+          background-color: #3a4959
+          border-radius: 6px
+          color: white
+          font-size: 1em
+          padding: 1em
+          text-align: center
+          text-transform: capitalize
+          width: 22em
