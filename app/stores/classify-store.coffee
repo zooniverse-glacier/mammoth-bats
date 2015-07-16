@@ -37,7 +37,11 @@ ClassifyStore = Reflux.createStore
 
   createNewClassification: (workflow, subject) ->
     classification = api.type('classification').create
-      annotations: {}
+      annotations: [
+        {task: "", value: null}
+        {task: "", value: null}
+        {task: "", value: null}
+      ]
       metadata:
         workflow_version: workflow.version
         started_at: (new Date).toISOString()
@@ -59,11 +63,11 @@ ClassifyStore = Reflux.createStore
 
     @trigger @data
 
-  onUpdateAnnotation: (answer) ->
-    annotations = @data?.classification.annotations
+  onUpdateAnnotation: (index, annotation) ->
+    annotations = @data?.classification.annotations[index]
 
-    _.extend annotations, answer
-    console.log 'update annotation', annotations
+    _.extend annotations, annotation
+    console.log 'update annotation', @data.classification, annotations
 
     @trigger @data
 
@@ -75,12 +79,16 @@ ClassifyStore = Reflux.createStore
         width: innerWidth
         height: innerHeight
 
-    @saveClassification()
-
   saveClassification: ->
-    @data?.classification.save().then (classification) ->
-      console.log 'saved', classification
-      classification.destroy()
-      @getSubject(@data?.workflow)
+    console.log 'called save classification', @data.classification
+
+    @data?.classification.save()
+      .catch (response) ->
+        console.log 'response', response, api.handleError(response)
+        api.handleError(response)
+      .then (classification) ->
+        console.log 'saved', classification
+        classification.destroy()
+        @getSubject(@data?.workflow)
 
 module.exports = ClassifyStore

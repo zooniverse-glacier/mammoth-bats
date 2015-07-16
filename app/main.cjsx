@@ -47,7 +47,7 @@ routes =
   <Route name="root" path="/" handler={Main}>
     <DefaultRoute handler={require './pages/home'} />
 
-    <Route name="classify" path="classify" handler={require './pages/classify'} />
+    <Route name="classify" path="classify" handler={require './pages/classify/classify'} />
   </Route>
 
 Router.run routes, (Handler) ->
