@@ -1,6 +1,7 @@
 React = require 'react/addons'
 ReactCSSTransitionGroup = React.addons.CSSTransitionGroup
 _ = require 'underscore'
+classnames = require 'classnames'
 
 counterpart = require 'counterpart'
 Translate = require 'react-translate-component'
@@ -44,6 +45,31 @@ module.exports = React.createClass
     @setState({
       currentTask: nextTask
       nextTask: null}, -> @props.clearMultipleSelection())
+
+  onClickProgressBarButton: (selectedTask) ->
+    index = selectedTask.slice(1)
+    nextTask = @determineNextTask(selectedTask, index)
+
+    @setState({
+      currentTask: selectedTask
+      nextTask: nextTask}, -> @reloadAnnotations(selectedTask, index))
+
+  determineNextTask: (selectedTask, index) ->
+    if selectedTask is "T0"
+      selectedNextTask = ""
+      for answer in @props.workflow.tasks[selectedTask].answers
+        if answer.label is @props.annotations[index].value.toString()
+          selectedNextTask = answer.next
+      selectedNextTask
+    else
+      @props.workflow.tasks[selectedTask].next
+
+  reloadAnnotations: (selectedTask, index) ->
+    inputs = React.findDOMNode(@).querySelectorAll 'input'
+
+    for input in inputs
+      for annotation in @props.annotations[index].value
+        input.checked = true if input.value is annotation
 
   handleClick: (question, answer, taskType, nextTask, event) ->
     if @state.currentTask is Object.keys(@props.workflow.tasks)[Object.keys(@props.workflow.tasks).length - 1] #last task
@@ -127,6 +153,9 @@ module.exports = React.createClass
     @showTask(summary)
     @props.clearMultipleSelection()
 
+  resetNumberInput: ->
+    @setState numberInput: "0"
+
   render: ->
     task = @props.workflow.tasks[@state.currentTask]
     <ReactCSSTransitionGroup transitionName="task-fade" transitionAppear={true}>
@@ -134,7 +163,7 @@ module.exports = React.createClass
         if @state.currentTask isnt 'summary'
           <div className="task">
             <p className="question">{task.question}</p>
-            <ProgressBar currentTask={@state.currentTask} showTask={@showTask} annotations={@props.annotations} />
+            <ProgressBar currentTask={@state.currentTask} onClickProgressBarButton={@onClickProgressBarButton} annotations={@props.annotations} />
             {switch task.type
               when "multiple"
                 <div className="task-checkbox-container">
@@ -167,60 +196,58 @@ module.exports = React.createClass
             }
           </div>
         else
-          <Summary annotations={@props.annotations} showTask={@showTask} firstTask={@props.firstTask} />
+          <Summary annotations={@props.annotations} showTask={@showTask} firstTask={@props.firstTask} resetNumberInput={@resetNumberInput} />
       }
     </ReactCSSTransitionGroup>
 
 ProgressBar = React.createClass
   displayName: "ProgressBar"
 
-  componentDidMount: ->
-    @taskOne = React.findDOMNode(@refs.taskOne)
-    @taskTwo = React.findDOMNode(@refs.taskTwo)
-    @taskThree = React.findDOMNode(@refs.taskThree)
-
-    @taskOne.classList.add 'active' if @props.currentTask is "T0"
-
-  componentWillReceiveProps: (nextProps) ->
-    if nextProps.currenTask is "T1" and nextProps.annotations[1].value?.length is 0
-      @taskTwo.classList.add 'active'
-
-    if nextProps.annotations[0].value?.length > 0
-      @taskOne.classList.remove 'active'
-      @taskOne.classList.add 'done'
-
-    if nextProps.annotations[1].value?.length > 0
-      if nextProps.annotations[1].value is "N/A"
-        @taskTwo.classList.remove 'active'
-        @taskTwo.classList.add 'skip'
-      else
-        @taskTwo.classList.remove 'active'
-        @taskTwo.classList.add 'done'
-
-    if nextProps.annotations[2].value?.length > 0
-      @taskThree.classList.remove 'active'
-      @taskThree.classList.add 'done'
-
   render: ->
     disabledCondition = @props.currentTask is "summary"
+
+    taskOneClasses = classnames
+      "progress-bar-button-container": true
+      active: @props.currentTask is "T0"
+      done: @props.currentTask isnt "T0" and @props.annotations[0].value?
+
+    taskTwoClasses = classnames
+      "progress-bar-button-container": true
+      active: @props.currentTask is "T1"
+      done: @props.currentTask isnt "T1" and @props.annotations[1].value?
+      skip: @props.annotations[1].value? is "N/A"
+
+    taskThreeClasses = classnames
+      "progress-bar-button-container": true
+      active: @props.currentTaks is "T2"
+      done: @props.currentTask isnt "T2" and @props.annotations[2].value?
+
     <div className="progress-bar">
-      <div ref="taskOne" className="progress-bar-button-container">
-        {if @props.currentTask is "T0" or @props.annotations[0].value?.length > 0
-          <button className="progress-bar-button" type="button" onClick={@props.showTask.bind(null, "T0")} disabled={disabledCondition}>
-            {if @props.annotations[0].value?.length is 0
-              "1"
+      <div ref="taskOne" className={taskOneClasses}>
+        <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, "T0")} disabled={disabledCondition}>
+          {unless @props.annotations[0].value?
+            "1"
+          else
+            <img src="./assets/checkmark.svg" alt="checkmark" />}
+        </button>
+      </div>
+      <div ref="taskTwo" className={taskTwoClasses}>
+        {if @props.currentTask is "T1" or @props.annotations[1].value?
+          <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, "T1")} disabled={disabledCondition}>
+            {unless @props.annotations[1].value?
+              "2"
             else
               <img src="./assets/checkmark.svg" alt="checkmark" />}
-          </button>
-        }
+          </button>}
       </div>
-      <div ref="taskTwo" className="progress-bar-button-container">
-        {if @props.currentTask is "T1" or @props.annotations[1].value?.length > 0
-          <button className="progress-bar-button" type="button" onClick={@props.showTask.bind(null, "T1")} disabled={disabledCondition}>2</button>}
-      </div>
-      <div ref="taskThree" className="progress-bar-button-container">
-        {if @props.currentTask is "T2" or @props.annotations[2].value?.length > 0
-          <button className="progress-bar-button" type="button" onClick={@props.showTask.bind(null, "T2")} disabled={disabledCondition}>3</button>}
+      <div ref="taskThree" className={taskThreeClasses}>
+        {if @props.currentTask is "T2" or @props.annotations[2].value?
+          <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, "T2")} disabled={disabledCondition}>
+            {unless @props.annotations[2].value?
+              "3"
+            else
+              <img src="./assets/checkmark.svg" alt="checkmark" />}
+          </button>}
       </div>
     </div>
 
@@ -232,6 +259,7 @@ Summary = React.createClass
     classifyActions.saveClassification()
       .then =>
         @props.showTask(@props.firstTask)
+        @props.resetNumberInput()
 
   render: ->
     batNoun =

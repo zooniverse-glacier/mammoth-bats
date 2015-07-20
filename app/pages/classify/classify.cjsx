@@ -37,11 +37,16 @@ module.exports = React.createClass
     @setState playbackRate: parseFloat(playbackRate)
 
   storeMultipleSelection: (question, answer, currentTask) ->
-    currentAnswers = @state.multipleSelectionAnswers
-    index = currentAnswers.indexOf(answer)
+    annotationIndex = currentTask.slice(1)
+    currentAnswers =
+      if @state.classificationData.classification.annotations[annotationIndex].value?.length > 0
+        @state.classificationData.classification.annotations[annotationIndex].value
+      else
+        @state.multipleSelectionAnswers
+    currentAnswersIndex = currentAnswers.indexOf(answer)
 
-    if index > -1
-      currentAnswers.splice index, 1
+    if currentAnswersIndex > -1
+      currentAnswers.splice currentAnswersIndex, 1
       @setState({multipleSelectionAnswers: currentAnswers}, ->
         @storeSelection(question, @state.multipleSelectionAnswers, currentTask))
     else
