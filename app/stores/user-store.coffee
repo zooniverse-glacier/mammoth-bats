@@ -24,10 +24,8 @@ module.exports = Reflux.createStore
   listenables: userActions
 
   init: ->
-    initialToken = extractToken window.location.hash
-
-    if initialToken
-      @_setToken initialToken
+    if token = @_tokenExists()
+      @_setupAuth token
 
     @getUser()
 
@@ -64,9 +62,17 @@ module.exports = Reflux.createStore
     @_removeToken()
     @getUser()
 
+  _setupAuth: (token) ->
+    api.headers['Authorization'] = 'Bearer ' + token
+    localStorage.setItem 'bearer_token', token
+
+  _tokenExists: ->
+    extractToken(window.location.hash) || localStorage.getItem('bearer_token')
+
   _getToken: ->
     token = null
     token ?= localStorage.getItem 'bearer_token'
+    token ?= extractToken window.location.hash
 
     token
 

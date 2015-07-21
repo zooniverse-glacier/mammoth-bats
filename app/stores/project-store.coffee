@@ -12,6 +12,5 @@ module.exports = Reflux.createStore
 
   getProject: ->
     api.type('projects').get(projectConfig.projectId)
-      .then (batProject) =>
-        @project = batProject
+      .then (@project) =>
         @trigger @project
