@@ -57,11 +57,9 @@ module.exports = React.createClass
       @setState({multipleSelectionAnswers: currentAnswers}, ->
         @storeSelection(question, @state.multipleSelectionAnswers, currentTask))
 
-  storeSelection: (question, answer, currentTask) ->
-    index = currentTask.slice(1)
+  storeSelection: (question, answer) ->
     annotation = task: question, value: answer
-
-    classifyActions.updateAnnotation(index, annotation)
+    classifyActions.updateAnnotation annotation
 
   clearMultipleSelection: ->
     @setState multipleSelectionAnswers: []

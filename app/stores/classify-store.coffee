@@ -64,12 +64,11 @@ ClassifyStore = Reflux.createStore
 
     @trigger @data
 
-  onUpdateAnnotation: (index, annotation) ->
-    annotations = @data?.classification.annotations[index]
+  onUpdateAnnotation: (updatedAnnotation) ->
+    currentAnnotations = _.find @data?.classification.annotations, (annotation) ->
+      (annotation.task is updatedAnnotation.task) or (annotation.task.length is 0)
 
-    _.extend annotations, annotation
-    console.log 'update annotation', @data.classification, annotations
-
+    _.extend currentAnnotations, updatedAnnotation
     @trigger @data
 
   finishClassification: ->

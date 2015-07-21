@@ -117,7 +117,7 @@ module.exports = React.createClass
       if numberInput is answer.label
         nextTask = answer.next
 
-    @setState nextTask: nextTask, -> console.log 'state', @state
+    @setState nextTask: nextTask
 
   setOptionsState: (checkedSelection) ->
     inputs = React.findDOMNode(@).querySelectorAll('input')
