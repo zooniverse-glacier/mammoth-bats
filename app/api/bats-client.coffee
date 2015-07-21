@@ -2,7 +2,7 @@ PanoptesClient = require 'panoptes-client'
 config = require './config'
 
 client = new PanoptesClient
-  appID: config.clientAppID
+  appID: '358c208ea1ef93b45438e1568627345152c195cf2dc6c6b5cc2d4c8f19c1ef5a'
   host: config.host
 
 client.handleError = (request) ->
@@ -32,5 +32,4 @@ client.handleError = (request) ->
 
 module.exports =
   api: client.api
-
-  auth: client.api.auth
+  client: client

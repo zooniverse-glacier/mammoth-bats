@@ -1,4 +1,5 @@
 React = require 'react/addons'
+UserStore = require '../stores/user-store'
 ZooniverseLogo = require './zooniverse-logo'
 LoginDialog = require '../partials/login-dialog'
 alert = require '../lib/alert'
@@ -15,14 +16,5 @@ module.exports = React.createClass
 
   render: ->
     <div className="login-bar">
-      <button type="button" className="secret-button" onClick={@showLoginDialog.bind this, 'sign-in'}>
-        <Translate content="loginBar.signIn" />
-      </button>&emsp;
-      <button type="button" className="secret-button" onClick={@showLoginDialog.bind this, 'register'}>
-        <Translate content="loginBar.register" />
-      </button>
+      <a href={ UserStore.signInUrl() }>Click to login</a>
     </div>
-
-  showLoginDialog: (which) ->
-    alert (resolve) =>
-      <LoginDialog which={which} onSuccess={resolve} auth={@props.auth} project={@props.project} />
