@@ -27,7 +27,10 @@ module.exports = React.createClass
 
   componentDidMount: ->
     @listenTo classifyStore, (classificationData) ->
-      @setState firstTask: classificationData?.workflow?.first_task, -> window.batsTasks = @state.classificationData?.workflow?.tasks
+      @setState firstTask: classificationData?.workflow?.first_task, ->
+        window.batsTasks = @state.classificationData?.workflow?.tasks
+    , (classificationData) ->
+      @setState firstTask: classificationData?.workflow?.first_task
 
   onClickPlaybackRateButton: ({currentTarget}) ->
     subjectVideo = React.findDOMNode(@refs.subjectVideo)
