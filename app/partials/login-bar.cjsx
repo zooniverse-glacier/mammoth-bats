@@ -10,19 +10,22 @@ counterpart.registerTranslations 'en',
     signIn: 'Sign in'
     register: 'Register'
 
+# https://panoptes.zooniverse.org/oauth/authorize
+
+settings =
+  host: 'https://panoptes.zooniverse.org'
+  clientId: '400ef4a4e543a717d370c4304a460eeb1ac4c9fc1b00897b92a67da5818a1603'
+  responseType: 'token'
+
+authorizationEndpoint = settings.host + '/oauth/authorize' +
+  "?response_type=#{ settings.responseType }" +
+  "&client_id=#{ settings.clientId }" +
+  "&redirect_uri=#{ encodeURI window.location }"
+
 module.exports = React.createClass
   displayName: 'LoginBar'
 
   render: ->
     <div className="login-bar">
-      <button type="button" className="secret-button" onClick={@showLoginDialog.bind this, 'sign-in'}>
-        <Translate content="loginBar.signIn" />
-      </button>&emsp;
-      <button type="button" className="secret-button" onClick={@showLoginDialog.bind this, 'register'}>
-        <Translate content="loginBar.register" />
-      </button>
+      <a href={ authorizationEndpoint }>Click to login</a>
     </div>
-
-  showLoginDialog: (which) ->
-    alert (resolve) =>
-      <LoginDialog which={which} onSuccess={resolve} auth={@props.auth} project={@props.project} />

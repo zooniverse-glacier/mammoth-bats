@@ -53,6 +53,9 @@ ClassifyStore = Reflux.createStore
         workflow: workflow.id
         subjects: [subject.id]
 
+    classification._workflow = workflow
+    classification._subjects = [subject]
+
     @createStore(workflow, classification, subject)
 
   createStore: (workflow, classification, subject) ->

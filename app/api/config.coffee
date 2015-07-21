@@ -18,6 +18,7 @@ envFromBrowser = location?.search.match(/\W?env=(\w+)/)?[1]
 envFromShell = process.env.NODE_ENV
 
 env = envFromBrowser ? envFromShell ? DEFAULT_ENV
+env = 'production'
 
 module.exports =
   host: hostFromBrowser ? hostFromShell ? API_HOSTS[env]

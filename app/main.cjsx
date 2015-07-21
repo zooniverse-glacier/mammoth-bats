@@ -5,6 +5,7 @@ Reflux = require 'reflux'
 BatsClient = require './api/bats-client'
 {api} = require './api/bats-client'
 {auth} = require './api/bats-client'
+oauth = require './api/oauth'
 PromiseToSetState = require './lib/promise-to-set-state'
 
 MainHeader = require './partials/main-header'
@@ -20,8 +21,6 @@ Main = React.createClass
 
   componentDidMount: ->
     @getProject()
-    @handleAuthChange()
-    auth.listen @handleAuthChange
 
   getProject: ->
     api.type('projects').get('865')
@@ -29,12 +28,6 @@ Main = React.createClass
         @setState project: batProject, ->
           console.log 'batProject', batProject
           window.batsProject = @state.project
-
-  componentWillUnmount: ->
-    auth.stopListening @handleAuthChange
-
-  handleAuthChange: ->
-    @promiseToSetState user: auth.checkCurrent()
 
   render: ->
     <div className="main">
