@@ -10,6 +10,8 @@ Reflux = require 'reflux'
 classifyStore = require '../../stores/classify-store'
 classifyActions = require '../../actions/classify-actions'
 
+workflowTaskKeys = require '../../lib/workflow-task-keys'
+
 counterpart.registerTranslations 'en',
   task:
     buttons:
@@ -30,17 +32,17 @@ module.exports = React.createClass
 
   getInitialState: ->
     currentTask: null
-    nextTask: "T2"
+    nextTask: workflowTaskKeys.third
     numberInput: "0"
 
   componentDidMount: ->
     @setState currentTask: @props.firstTask
 
   showTask: (nextTask) ->
-    if @state.currentTask is "T0"
-      @props.storeSelection(@props.workflow.tasks["T0"].question, @state.numberInput, @state.currentTask)
+    if @state.currentTask is workflowTaskKeys.first
+      @props.storeSelection(@props.workflow.tasks[workflowTaskKeys.first].question, @state.numberInput, @state.currentTask)
       if @state.numberInput is "0"
-        @props.storeSelection(@props.workflow.tasks["T1"].question, "N/A", "T1")
+        @props.storeSelection(@props.workflow.tasks[workflowTaskKeys.second].question, "N/A", workflowTaskKeys.second)
 
     @setState({
       currentTask: nextTask
@@ -55,7 +57,7 @@ module.exports = React.createClass
       nextTask: nextTask}, -> @reloadAnnotations(selectedTask, index))
 
   determineNextTask: (selectedTask, index) ->
-    if selectedTask is "T0"
+    if selectedTask is workflowTaskKeys.first
       selectedNextTask = ""
       for answer in @props.workflow.tasks[selectedTask].answers
         if answer.label is @props.annotations[index].value.toString()
@@ -79,7 +81,7 @@ module.exports = React.createClass
 
     if taskType is "multiple"
       @props.storeMultipleSelection(question, answer, @state.currentTask)
-      @setOptionsState(event.target) if @state.currentTask is "T2" # Add animal step
+      @setOptionsState(event.target) if @state.currentTask is workflowTaskKeys.third # Add animal step
     else if taskType is "single"
       @props.storeSelection(question, answer, @state.currentTask)
 
@@ -148,7 +150,6 @@ module.exports = React.createClass
     input.parentNode.classList.remove 'disabled'
 
   onClickFinish: (summary) ->
-    console.log 'finished!'
     classifyActions.finishClassification()
     @showTask(summary)
     @props.clearMultipleSelection()
@@ -158,6 +159,7 @@ module.exports = React.createClass
 
   render: ->
     task = @props.workflow.tasks[@state.currentTask]
+
     <ReactCSSTransitionGroup transitionName="task-fade" transitionAppear={true}>
       {if @state.currentTask?
         if @state.currentTask isnt 'summary'
@@ -180,16 +182,16 @@ module.exports = React.createClass
                   <button type="button" className="plus-button" value="+" onClick={@onClickPlus}>+</button>
                 </fieldset>
             }
-            {unless @state.currentTask is Object.keys(@props.workflow.tasks).pop()
+            {unless @state.currentTask is workflowTaskKeys.third
               <div className="workflow-action">
                 <p className="help-text">{task.help}</p>
-                <button ref="nextButton" className="action-button" type="button" onClick={@showTask.bind(null, @state.nextTask)} disabled={@state.currentTask is "T1" and (!@props.annotations[1].value? or @props.annotations[1].value?.length is 0)}>
+                <button ref="nextButton" className="action-button" type="button" onClick={@showTask.bind(null, @state.nextTask)} disabled={@state.currentTask is workflowTaskKeys.second and (!@props.annotations[1].value? or @props.annotations[1].value?.length is 0)}>
                   <Translate content="task.buttons.next" />
                 </button>
               </div>
             else
               <div className="workflow-action">
-                <button ref="finishButton" className="action-button" type="button" onClick={@onClickFinish.bind(null, @state.nextTask)} disabled={!@props.annotations[2].value? or @props.annotations[2].value?.length is 0}>
+                <button ref="finishButton" className="action-button" type="button" onClick={@onClickFinish.bind(null, 'summary')} disabled={!@props.annotations[2].value? or @props.annotations[2].value?.length is 0}>
                   <Translate content="task.buttons.finish" />
                 </button>
               </div>
@@ -208,23 +210,23 @@ ProgressBar = React.createClass
 
     taskOneClasses = classnames
       "progress-bar-button-container": true
-      active: @props.currentTask is "T0"
-      done: @props.currentTask isnt "T0" and @props.annotations[0].value?
+      active: @props.currentTask is workflowTaskKeys.first
+      done: @props.currentTask isnt workflowTaskKeys.first and @props.annotations[0].value?
 
     taskTwoClasses = classnames
       "progress-bar-button-container": true
-      active: @props.currentTask is "T1"
-      done: @props.currentTask isnt "T1" and @props.annotations[1].value?
+      active: @props.currentTask is workflowTaskKeys.second
+      done: @props.currentTask isnt workflowTaskKeys.second and @props.annotations[1].value?
       skip: @props.annotations[1].value? is "N/A"
 
     taskThreeClasses = classnames
       "progress-bar-button-container": true
-      active: @props.currentTaks is "T2"
-      done: @props.currentTask isnt "T2" and @props.annotations[2].value?
+      active: @props.currentTaks is workflowTaskKeys.third
+      done: @props.currentTask isnt workflowTaskKeys.third and @props.annotations[2].value?
 
     <div className="progress-bar">
       <div ref="taskOne" className={taskOneClasses}>
-        <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, "T0")} disabled={disabledCondition}>
+        <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, workflowTaskKeys.first)} disabled={disabledCondition}>
           {unless @props.annotations[0].value?
             "1"
           else
@@ -232,8 +234,8 @@ ProgressBar = React.createClass
         </button>
       </div>
       <div ref="taskTwo" className={taskTwoClasses}>
-        {if @props.currentTask is "T1" or @props.annotations[1].value?
-          <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, "T1")} disabled={disabledCondition}>
+        {if @props.currentTask is workflowTaskKeys.second or @props.annotations[1].value?
+          <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, workflowTaskKeys.second)} disabled={disabledCondition}>
             {unless @props.annotations[1].value?
               "2"
             else
@@ -241,8 +243,8 @@ ProgressBar = React.createClass
           </button>}
       </div>
       <div ref="taskThree" className={taskThreeClasses}>
-        {if @props.currentTask is "T2" or @props.annotations[2].value?
-          <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, "T2")} disabled={disabledCondition}>
+        {if @props.currentTask is workflowTaskKeys.third or @props.annotations[2].value?
+          <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, workflowTaskKeys.third)} disabled={disabledCondition}>
             {unless @props.annotations[2].value?
               "3"
             else
@@ -255,7 +257,6 @@ Summary = React.createClass
   displayName: "Summary"
 
   onClickNextVideo: ->
-    console.log 'get next subject'
     classifyActions.saveClassification()
       .then =>
         @props.showTask(@props.firstTask)
