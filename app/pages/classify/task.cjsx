@@ -49,17 +49,15 @@ module.exports = React.createClass
       nextTask: null}, -> @props.clearMultipleSelection())
 
   onClickProgressBarButton: (selectedTask) ->
-    index = selectedTask.slice(1)
-    nextTask = @determineNextTask(selectedTask, index)
+    @setState currentTask: selectedTask
 
-    @setState({
-      currentTask: selectedTask
-      nextTask: nextTask}, -> @reloadAnnotations(selectedTask, index))
-
-  determineNextTask: (selectedTask, index) ->
+  determineNextTask: (selectedTask) ->
+    # this needs some refactoring. index doesnt exist
     if selectedTask is workflowTaskKeys.first
       selectedNextTask = ""
       for answer in @props.workflow.tasks[selectedTask].answers
+        # annotation = _.find @props.annotations, (annotation) ->
+        #   annotation.task is selectedTask
         if answer.label is @props.annotations[index].value.toString()
           selectedNextTask = answer.next
       selectedNextTask
