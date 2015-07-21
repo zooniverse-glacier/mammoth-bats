@@ -1,5 +1,5 @@
 Reflux = require 'reflux'
-{api} = client = require '../api/bats-client'
+{client, api} = client = require '../api/bats-client'
 extractToken = require '../lib/extract-token'
 userActions = require '../actions/user-actions'
 
@@ -45,7 +45,7 @@ module.exports = Reflux.createStore
   signInUrl: (location = null) ->
     location ?= window.location
 
-    api.host + '/oauth/authorize' +
+    client.host + '/oauth/authorize' +
       "?response_type=token" +
       "&client_id=#{ client.appID }" +
       "&redirect_uri=#{ location }"
