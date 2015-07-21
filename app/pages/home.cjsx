@@ -5,5 +5,5 @@ module.exports = React.createClass
 
   render: ->
     <div className="home-page">
-      <h1>Hello World</h1>
+      <h1>Mammoth Bats</h1>
     </div>
