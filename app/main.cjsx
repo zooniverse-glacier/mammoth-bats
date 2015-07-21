@@ -2,6 +2,7 @@ React = require 'react/addons'
 Router = require 'react-router'
 {Route, RouteHandler, DefaultRoute, Link} = require 'react-router'
 Reflux = require 'reflux'
+projectConfig = require './lib/project-config'
 {api} = client = require './api/bats-client'
 userStore = require './stores/user-store'
 
@@ -10,13 +11,16 @@ MainFooter = require './partials/main-footer'
 
 Main = React.createClass
   displayName: "Main"
-  mixins: [Reflux.connect(userStore, 'user')]
+  mixins: [Reflux.listenTo(userStore, 'onUserChange')]
 
   getInitialState: ->
     project: null
 
+  onUserChange: (user) ->
+    @setState { user }, @getProject
+
   getProject: ->
-    api.type('projects').get('865')
+    api.type('projects').get(projectConfig.projectId)
       .then (project) =>
         @setState { project }
 

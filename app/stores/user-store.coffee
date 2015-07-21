@@ -36,7 +36,10 @@ module.exports = Reflux.createStore
       .then parseJson
       .then (data) =>
         @user = data.users[0]
+
+        # what actually allows the api client to send authenticated requests
         api.headers['Authorization'] = 'Bearer ' + token
+
         @trigger @user
       .catch (error) =>
         @user = null

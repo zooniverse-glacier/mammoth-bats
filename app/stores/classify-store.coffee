@@ -1,29 +1,27 @@
 Reflux = require 'reflux'
 counterpart = require 'counterpart'
 _ = require 'underscore'
+projectConfig = require '../lib/project-config'
 {api} = require '../api/bats-client'
 classifyActions = require '../actions/classify-actions'
+projectStore = require './project-store'
 
 ClassifyStore = Reflux.createStore
   listenables: classifyActions
 
   init: ->
-    @getProject()
+    @listenTo projectStore, @getWorkflow
 
   getInitialState: ->
     @data
 
-  getProject: ->
-    api.type('projects').get('865')
-      .then (batProject) =>
-        @project = batProject
-        @getWorkflow(batProject)
+  getWorkflow: (project = null) ->
+    unless project
+      return throw new Error 'cannot fetch workflows for project'
 
-  getWorkflow: (project) ->
     project.get('workflows')
       .then ([workflow]) =>
         workflow.get('subject_sets').then ([subject_sets]) =>
-          console.log subject_sets.id
           @getSubject(workflow, subject_sets.id)
 
   getSubject: (workflow, subjectSetID) ->

@@ -1,7 +1,7 @@
 Reflux = require 'reflux'
 
 UserActions = Reflux.createActions({
-  someAction: 'someAction'
+  userChanged: 'userChanged'
 })
 
 module.exports = UserActions
