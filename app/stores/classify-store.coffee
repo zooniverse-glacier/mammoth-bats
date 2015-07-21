@@ -15,11 +15,11 @@ ClassifyStore = Reflux.createStore
   getInitialState: ->
     @data
 
-  getWorkflow: (project = null) ->
-    unless project
+  getWorkflow: (@project = null) ->
+    unless @project
       return throw new Error 'cannot fetch workflows for project'
 
-    project.get('workflows')
+    @project.get('workflows')
       .then ([workflow]) =>
         workflow.get('subject_sets').then ([subject_sets]) =>
           @getSubject(workflow, subject_sets.id)
