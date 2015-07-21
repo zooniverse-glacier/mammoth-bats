@@ -32,5 +32,4 @@ client.handleError = (request) ->
 
 module.exports =
   api: client.api
-
-  auth: client.api.auth
+  client: client

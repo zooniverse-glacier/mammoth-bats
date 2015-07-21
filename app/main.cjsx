@@ -2,37 +2,29 @@ React = require 'react/addons'
 Router = require 'react-router'
 {Route, RouteHandler, DefaultRoute, Link} = require 'react-router'
 Reflux = require 'reflux'
-BatsClient = require './api/bats-client'
-{api} = require './api/bats-client'
-{auth} = require './api/bats-client'
-oauth = require './api/oauth'
-PromiseToSetState = require './lib/promise-to-set-state'
+{api} = client = require './api/bats-client'
+userStore = require './stores/user-store'
 
 MainHeader = require './partials/main-header'
 MainFooter = require './partials/main-footer'
 
 Main = React.createClass
   displayName: "Main"
-  mixins: [PromiseToSetState]
+  mixins: [Reflux.connect(userStore, 'user')]
 
   getInitialState: ->
     project: null
-    user: null
-
-  componentDidMount: ->
-    @getProject()
 
   getProject: ->
     api.type('projects').get('865')
-      .then (batProject) =>
-        @setState project: batProject, ->
-          console.log 'batProject', batProject
-          window.batsProject = @state.project
+      .then (project) =>
+        @setState { project }
 
   render: ->
+    console.log @state.user
     <div className="main">
-      <MainHeader project={@state.project} user={@state.user} auth={auth} api={api} />
-      <RouteHandler project={@state.project} user={@state.user} auth={auth} api={api} />
+      <MainHeader project={@state.project} user={@state.user} />
+      <RouteHandler project={@state.project} user={@state.user} />
       <MainFooter />
     </div>
 
@@ -48,4 +40,3 @@ Router.run routes, (Handler) ->
 
 window.React = React
 window.batsApi = api
-window.batsAuth = auth
