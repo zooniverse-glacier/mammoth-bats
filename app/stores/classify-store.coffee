@@ -1,10 +1,10 @@
 Reflux = require 'reflux'
-counterpart = require 'counterpart'
 _ = require 'underscore'
-projectConfig = require '../lib/project-config'
+counterpart = require 'counterpart'
 {api} = require '../api/bats-client'
 classifyActions = require '../actions/classify-actions'
 projectStore = require './project-store'
+projectConfig = require '../lib/project-config'
 
 ClassifyStore = Reflux.createStore
   listenables: classifyActions
@@ -19,19 +19,21 @@ ClassifyStore = Reflux.createStore
     unless @project
       return throw new Error 'cannot fetch workflows for project'
 
-    @project.get('workflows')
-      .then ([workflow]) =>
-        workflow.get('subject_sets').then ([subject_sets]) =>
-          @getSubject(workflow, subject_sets.id)
+    api.type('workflows').get projectConfig.workflowId
+      .then (@workflow) =>
+        @getNextSubject()
 
-  getSubject: (workflow, subjectSetID) ->
+  getNextSubject: ->
     randomInt = Math.floor(Math.random() * 3) #random num 0-4
 
-    api.type('subjects').get(workflow_id: workflow.id, subject_set_id: subjectSetID)
+    query =
+      workflow_id: @workflow.id
+      sort: 'queued'
+
+    api.type('subjects').get query
       .then (subjects) =>
-        console.log 'subjects', subjects, subjects[randomInt]
         subject = subjects[randomInt]
-        @createNewClassification(workflow, subject)
+        @createNewClassification @workflow, subject
 
   createNewClassification: (workflow, subject) ->
     classification = api.type('classification').create
@@ -80,15 +82,11 @@ ClassifyStore = Reflux.createStore
         height: innerHeight
 
   saveClassification: ->
-    console.log 'called save classification', @data.classification
-
     @data?.classification.save()
-      .catch (response) ->
-        console.log 'response', response, api.handleError(response)
-        api.handleError(response)
       .then (classification) ->
-        console.log 'saved', classification
         classification.destroy()
         @getSubject(@data?.workflow)
+      .catch (error) ->
+        console.log 'error saving c'
 
 module.exports = ClassifyStore

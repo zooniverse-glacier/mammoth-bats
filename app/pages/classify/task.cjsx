@@ -258,6 +258,7 @@ Summary = React.createClass
 
   onClickNextVideo: ->
     classifyActions.saveClassification()
+    classifyActions.getNextSubject()
       .then =>
         @props.showTask(@props.firstTask)
         @props.resetNumberInput()
