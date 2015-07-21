@@ -14,6 +14,7 @@ module.exports = React.createClass
       <Link className="main-header-logo-link" to="root"><ZooniverseLogo /></Link>
       <nav className="main-header-nav">
         <Link to="classify" className="main-header-link">Classify</Link>
+        <Link to="about" className="main-header-link">About</Link>
       </nav>
       {if @props.user
         <AccountBar user={@props.user} auth={@props.auth} />
@@ -21,4 +22,3 @@ module.exports = React.createClass
         <LoginBar project={@props.project} auth={@props.auth} />
       }
     </header>
-

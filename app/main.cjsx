@@ -39,7 +39,9 @@ Main = React.createClass
   render: ->
     <div className="main">
       <MainHeader project={@state.project} user={@state.user} auth={auth} api={api} />
-      <RouteHandler project={@state.project} user={@state.user} auth={auth} api={api} />
+      <div className="app-container">
+        <RouteHandler project={@state.project} user={@state.user} auth={auth} api={api} />
+      </div>
       <MainFooter />
     </div>
 
@@ -48,6 +50,7 @@ routes =
     <DefaultRoute handler={require './pages/home'} />
 
     <Route name="classify" path="classify" handler={require './pages/classify/classify'} />
+    <Route name="about" path="about" handler={require './pages/about'} />
   </Route>
 
 Router.run routes, (Handler) ->

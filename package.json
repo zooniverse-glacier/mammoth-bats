@@ -20,6 +20,7 @@
     "gulp-stylus": "~2.0.5",
     "gulp-util": "~3.0.6",
     "gulp-watch": "~4.2.4",
+    "json-loader": "^0.5.2",
     "jsx-loader": "~0.13.2",
     "nib": "~1.1.0",
     "node-libs-browser": "^0.5.2",
@@ -31,6 +32,12 @@
     "counterpart": "~0.16.8",
     "debounce": "^1.0.0",
     "json-api-client": "~0.4.0",
+    "markdown-it": "~4.0.1",
+    "markdown-it-container": "~1.0.0",
+    "markdown-it-emoji": "~1.0.0",
+    "markdown-it-footnote": "~1.0.0",
+    "markdown-it-sub": "~1.0.0",
+    "markdown-it-sup": "~1.0.0",
     "panoptes-client": "~0.1.1",
     "react": "0.13.3",
     "react-interpolate-component": "~0.7.1",
@@ -38,6 +45,7 @@
     "react-translate-component": "~0.9.0",
     "reflux": "~0.2.8",
     "tether": "HubSpot/tether#df8cd44",
+    "twemoji": "^1.4.1",
     "underscore": "^1.8.3"
   }
 }
