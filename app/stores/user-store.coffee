@@ -1,6 +1,5 @@
 Reflux = require 'reflux'
 {client, api} = client = require '../api/bats-client'
-extractToken = require '../lib/extract-token'
 userActions = require '../actions/user-actions'
 
 checkStatus = (response) ->
@@ -14,17 +13,29 @@ checkStatus = (response) ->
 parseJson = (response) ->
   response.json()
 
+extractToken = (hash) ->
+  match = hash.match(/access_token=(\w+)/)
+  if !!match && match[1]
+    match[1]
+  else
+    null
+
 module.exports = Reflux.createStore
   listenables: userActions
 
   init: ->
-    @getUser()
+    if token = @_getToken()
+      @_setToken token
+      @getUser()
+    else
+      @trigger @user
 
   getInitialState: ->
     user: null
 
   getUser: ->
-    token = extractToken window.location.hash
+    token = @_getToken()
+    unless token then return
 
     fetch(api.root + '/me', {
       method: 'GET'
@@ -36,10 +47,6 @@ module.exports = Reflux.createStore
       .then parseJson
       .then (data) =>
         @user = data.users[0]
-
-        # what actually allows the api client to send authenticated requests
-        api.headers['Authorization'] = 'Bearer ' + token
-
         @trigger @user
       .catch (error) =>
         @user = null
@@ -52,3 +59,18 @@ module.exports = Reflux.createStore
       "?response_type=token" +
       "&client_id=#{ client.appID }" +
       "&redirect_uri=#{ location }"
+
+  _getToken: ->
+    token = null
+    token ?= localStorage.getItem 'bearer_token'
+    token ?= extractToken window.location.hash
+
+    token
+
+  _setToken: (token) ->
+    api.headers['Authorization'] = 'Bearer ' + token
+    localStorage.setItem 'bearer_token', token
+
+  _removeToken: ->
+    api.headers['Authorization'] = null
+    localStorage.removeItem 'bearer_token'
