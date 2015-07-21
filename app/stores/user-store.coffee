@@ -24,18 +24,18 @@ module.exports = Reflux.createStore
   listenables: userActions
 
   init: ->
-    if token = @_getToken()
-      @_setToken token
-      @getUser()
-    else
-      @trigger @user
+    initialToken = extractToken window.location.hash
+
+    if initialToken
+      @_setToken initialToken
+
+    @getUser()
 
   getInitialState: ->
     user: null
 
   getUser: ->
     token = @_getToken()
-    unless token then return
 
     fetch(api.root + '/me', {
       method: 'GET'
@@ -60,10 +60,13 @@ module.exports = Reflux.createStore
       "&client_id=#{ client.appID }" +
       "&redirect_uri=#{ location }"
 
+  onSignOut: ->
+    @_removeToken()
+    @getUser()
+
   _getToken: ->
     token = null
     token ?= localStorage.getItem 'bearer_token'
-    token ?= extractToken window.location.hash
 
     token
 

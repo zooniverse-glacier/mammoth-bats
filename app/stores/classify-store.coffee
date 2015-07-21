@@ -24,14 +24,17 @@ ClassifyStore = Reflux.createStore
         @getNextSubject()
 
   getNextSubject: ->
-    randomInt = Math.floor(Math.random() * 3) #random num 0-4
-
     query =
       workflow_id: @workflow.id
       sort: 'queued'
 
     api.type('subjects').get query
       .then (subjects) =>
+        if subjects.length is 0
+          # handle empty subjects array
+          return
+
+        randomInt = Math.floor(Math.random() * subjects.length) #random num 0-4
         subject = subjects[randomInt]
         @createNewClassification @workflow, subject
 

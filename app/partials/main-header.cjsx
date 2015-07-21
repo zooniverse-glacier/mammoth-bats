@@ -17,8 +17,8 @@ module.exports = React.createClass
         <Link to="about" className="main-header-link">About</Link>
       </nav>
       {if @props.user
-        <AccountBar user={@props.user} auth={@props.auth} />
+        <AccountBar user={@props.user} />
       else
-        <LoginBar project={@props.project} auth={@props.auth} />
+        <LoginBar project={@props.project} />
       }
     </header>

@@ -2,6 +2,7 @@ React = require 'react'
 {Link} = require 'react-router'
 counterpart = require 'counterpart'
 Translate = require 'react-translate-component'
+userActions = require '../actions/user-actions'
 
 counterpart.registerTranslations 'en',
   accountMenu:
@@ -17,7 +18,7 @@ module.exports = React.createClass
     unread: false
 
   handleSignOutClick: ->
-    @props.auth.signOut()
+    userActions.signOut()
 
   render: ->
     <div className="account-bar">
