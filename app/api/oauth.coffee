@@ -4,11 +4,11 @@ extractToken = (hash) ->
   match = hash.match(/access_token=(\w+)/)
   !!match && match[1]
 
-fetch(config.host + '/me', {
+fetch(config.host + '/api/me', {
   method: 'GET'
   headers:
     'Authorization': 'Bearer ' + extractToken window.location.hash
-    'Accept': 'application/json'
+    'Accept': 'Accept: application/vnd.api+json; version=1'
   })
   .then (user) ->
     console.log user
