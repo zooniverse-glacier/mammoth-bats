@@ -16,5 +16,5 @@ module.exports = React.createClass
 
   render: ->
     <div className="login-bar">
-      <a href={ UserStore.signInUrl() }>Click to login</a>
+      <a href={UserStore.signInUrl()}><button>Click to login</button></a>
     </div>
