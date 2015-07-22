@@ -42,9 +42,9 @@ ClassifyStore = Reflux.createStore
   createNewClassification: (workflow, subject) ->
     classification = api.type('classifications').create
       annotations: [
-        {key: workflowTaskKeys.first, task: "", value: 0}
-        {key: workflowTaskKeys.second, task: "", value: null}
-        {key: workflowTaskKeys.third, task: "", value: null}
+        {key: workflowTaskKeys.first, task: workflow.tasks[workflowTaskKeys.first].question, value: 0}
+        {key: workflowTaskKeys.second, task: workflow.tasks[workflowTaskKeys.second].question, value: null}
+        {key: workflowTaskKeys.third, task: workflow.tasks[workflowTaskKeys.third].question, value: null}
       ]
       metadata:
         workflow_version: workflow.version
