@@ -23,13 +23,8 @@ module.exports = React.createClass
   mixins: [Reflux.ListenerMixin, Reflux.connect(classifyStore, 'classificationData')]
 
   getInitialState: ->
-    currentTask: null
-    multipleSelectionAnswers: []
+    currentTask: workflowTaskKeys.first
     playbackRate: 1
-
-  componentDidMount: ->
-    @listenTo classifyStore, (classificationData) ->
-      @setState currentTask: workflowTaskKeys.first
 
   onClickPlaybackRateButton: ({currentTarget}) ->
     subjectVideo = React.findDOMNode(@refs.subjectVideo)
@@ -52,9 +47,6 @@ module.exports = React.createClass
   storeSelection: (key, answer) ->
     annotation = key: key, value: answer
     classifyActions.updateAnnotation annotation
-
-  clearMultipleSelection: ->
-    @setState multipleSelectionAnswers: []
 
   render: ->
     activePlaybackRateStyle = {backgroundColor: "#92a2b3", color: "black", border: "solid 2px transparent"}
@@ -109,7 +101,6 @@ module.exports = React.createClass
                 annotations={@state.classificationData?.classification.annotations}
                 storeSelection={@storeSelection}
                 storeMultipleSelection={@storeMultipleSelection}
-                clearMultipleSelection={@clearMultipleSelection}
               />
             </div>
           else

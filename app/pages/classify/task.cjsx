@@ -42,8 +42,7 @@ module.exports = React.createClass
       if firstTaskAnnotation.toString() is "0"
         @props.storeSelection workflowTaskKeys.second, "N/A"
 
-    @setState currentTask: task, ->
-      @props.clearMultipleSelection()
+    @setState currentTask: task
 
   onClickProgressBarButton: (selectedTask) ->
     @setState currentTask: selectedTask
@@ -136,7 +135,6 @@ module.exports = React.createClass
   onClickFinish: ->
     classifyActions.finishClassification()
     @showTask 'summary'
-    @props.clearMultipleSelection()
 
   onClickNextVideo: ->
     classifyActions.getNextSubject()
