@@ -91,23 +91,17 @@ module.exports = React.createClass
             </div>
           }
         </section>
-        <section className="questions-container">
-          <img className="batman-placeholder" src="./assets/batman-placeholder.png" alt="bat icon placeholder" />
-          {if @state.classificationData?.workflow?.tasks? and @state.currentTask?
-            <div className="task-container">
-              <Task
-                task={@state.currentTask}
-                workflow={@state.classificationData?.workflow}
-                annotations={@state.classificationData?.classification.annotations}
-                storeSelection={@storeSelection}
-                storeMultipleSelection={@storeMultipleSelection}
-              />
-            </div>
-          else
-            <div style={display: 'flex', justifyContent: 'center', alignItems: 'center'}>
-              <LoadingIndicator />
-            </div>
-          }
-        </section>
+        {if @state.classificationData?.workflow?.tasks? and @state.currentTask?
+          <Task
+            task={@state.currentTask}
+            workflow={@state.classificationData?.workflow}
+            annotations={@state.classificationData?.classification.annotations}
+            storeSelection={@storeSelection}
+            storeMultipleSelection={@storeMultipleSelection}
+          />
+        else
+          <div style={display: 'flex', justifyContent: 'center', alignItems: 'center'}>
+            <LoadingIndicator />
+          </div>}
       </div>
     </div>

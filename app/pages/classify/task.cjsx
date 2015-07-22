@@ -27,6 +27,14 @@ counterpart.registerTranslations 'en',
       this: "this"
       these: "these"
 
+camelize = (str) ->
+  str.replace /(?:^\w|[A-Z]|\b\w)/g, (letter, index) ->
+    if index is 0
+      letter.toLowerCase()
+    else
+      letter.toUpperCase()
+  .replace /\s+/g, ''
+
 module.exports = React.createClass
   displayName: 'Task'
 
@@ -40,9 +48,11 @@ module.exports = React.createClass
     if @state.currentTask is workflowTaskKeys.first
       firstTaskAnnotation = classifyStore.getAnnotationByKey(workflowTaskKeys.first).value
       if firstTaskAnnotation.toString() is "0"
-        @props.storeSelection workflowTaskKeys.second, "N/A"
+        @props.storeSelection workflowTaskKeys.second, []
 
-    @setState currentTask: task
+    @setState
+      currentTask: task
+      hoveringOver: null
 
   onClickProgressBarButton: (selectedTask) ->
     @setState currentTask: selectedTask
@@ -140,10 +150,15 @@ module.exports = React.createClass
     classifyActions.getNextSubject()
     @showTask workflowTaskKeys.first
 
+  handleHover: (key, e) ->
+    @setState hoveringOver: key
+
   render: ->
     task = @props.workflow.tasks[@state.currentTask]
 
-    <ReactCSSTransitionGroup transitionName="task-fade" transitionAppear={true}>
+    <div className="task-container">
+      <FieldGuide toDisplay={@state.hoveringOver} />
+
       {if @state.currentTask?
         if @state.currentTask isnt 'summary'
           <div className="task">
@@ -156,20 +171,19 @@ module.exports = React.createClass
               when "multiple"
                 <div className="task-checkbox-container">
                   {for answer in task.answers
-                    <label key={answer.label} className="task-checkbox">
+                    <label key={answer.label} onMouseOver={@handleHover.bind null, camelize answer.label} className="task-checkbox">
                       <input type="checkbox" name={task.question} value={answer.label} onClick={@handleClick.bind(null, task.question, answer.label, task.type, task.next)} />
                       {answer.label}
                     </label>}
                 </div>
               when "single"
                 firstTaskAnnotation = classifyStore.getAnnotationByKey workflowTaskKeys.first
-
                 <fieldset>
                   <button type="button" className="minus-button" value="-" onClick={@onClickMinus}>-</button>
                   <input ref="numberInput" type="text" className="number-input" readOnly value={firstTaskAnnotation.value} />
                   <button type="button" className="plus-button" value="+" onClick={@onClickPlus}>+</button>
-                </fieldset>
-            }
+                </fieldset>}
+
             {unless @state.currentTask is workflowTaskKeys.third
               secondTaskAnnotation = classifyStore.getAnnotationByKey workflowTaskKeys.second
 
@@ -190,9 +204,8 @@ module.exports = React.createClass
         else
           <Summary
             annotations={@props.annotations}
-            onClickNextVideo={@onClickNextVideo} />
-      }
-    </ReactCSSTransitionGroup>
+            onClickNextVideo={@onClickNextVideo} />}
+    </div>
 
 ProgressBar = React.createClass
   displayName: "ProgressBar"
@@ -296,4 +309,21 @@ Summary = React.createClass
           <Translate content="task.buttons.nextVideo" />
         </button>
       </div>
+    </div>
+
+fieldGuideContent = require '../../lib/field-guide-content'
+FieldGuide = React.createClass
+  displayName: 'FieldGuide'
+
+  getDefaultProps: ->
+    toDisplay: null
+
+  render: ->
+    <div className="field-guide">
+      {if !@props.toDisplay?
+        <img className="batman-placeholder" src="./assets/batman-placeholder.png" alt="bat icon placeholder" />}
+
+      {if @props.toDisplay? && @props.toDisplay in Object.keys(fieldGuideContent)
+        content = fieldGuideContent[@props.toDisplay]
+        <p>{content}</p>}
     </div>
