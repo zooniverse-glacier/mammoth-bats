@@ -5,6 +5,7 @@ counterpart = require 'counterpart'
 classifyActions = require '../actions/classify-actions'
 projectStore = require './project-store'
 projectConfig = require '../lib/project-config'
+workflowTaskKeys = require '../lib/workflow-task-keys'
 
 ClassifyStore = Reflux.createStore
   listenables: classifyActions
@@ -39,11 +40,11 @@ ClassifyStore = Reflux.createStore
         @createNewClassification @workflow, subject
 
   createNewClassification: (workflow, subject) ->
-    classification = api.type('classification').create
+    classification = api.type('classifications').create
       annotations: [
-        {task: "", value: null}
-        {task: "", value: null}
-        {task: "", value: null}
+        {key: workflowTaskKeys.first, task: "", value: 0}
+        {key: workflowTaskKeys.second, task: "", value: null}
+        {key: workflowTaskKeys.third, task: "", value: null}
       ]
       metadata:
         workflow_version: workflow.version
@@ -70,26 +71,30 @@ ClassifyStore = Reflux.createStore
     @trigger @data
 
   onUpdateAnnotation: (updatedAnnotation) ->
-    currentAnnotations = _.find @data?.classification.annotations, (annotation) ->
-      (annotation.task is updatedAnnotation.task) or (annotation.task.length is 0)
+    currentAnnotation = _.find @data?.classification.annotations, (annotation) ->
+      annotation.key is updatedAnnotation.key
 
-    _.extend currentAnnotations, updatedAnnotation
+    _.extend currentAnnotation, updatedAnnotation
     @trigger @data
 
   finishClassification: ->
-    @data?.classification.update
+    upsert =
       completed: true
       'metadata.finished_at': (new Date).toISOString()
       'metadata.viewport':
         width: innerWidth
         height: innerHeight
 
-  saveClassification: ->
-    @data?.classification.save()
+    @data?.classification
+      .update upsert
+      .save()
       .then (classification) ->
         classification.destroy()
-        @getSubject(@data?.workflow)
       .catch (error) ->
         console.log 'error saving c'
+
+  getAnnotationByKey: (key) ->
+    _.find @data?.classification.annotations, (annotation) ->
+      annotation.key is key
 
 module.exports = ClassifyStore

@@ -31,36 +31,32 @@ module.exports = React.createClass
   displayName: 'Task'
 
   getInitialState: ->
-    currentTask: null
-    nextTask: workflowTaskKeys.third
-    numberInput: "0"
+    currentTask: workflowTaskKeys.first
 
   componentDidMount: ->
-    @setState currentTask: @props.firstTask
+    @showTask @props.task
 
-  showTask: (nextTask) ->
+  showTask: (task) ->
     if @state.currentTask is workflowTaskKeys.first
-      @props.storeSelection(@props.workflow.tasks[workflowTaskKeys.first].question, @state.numberInput, @state.currentTask)
-      if @state.numberInput is "0"
-        @props.storeSelection(@props.workflow.tasks[workflowTaskKeys.second].question, "N/A", workflowTaskKeys.second)
+      firstTaskAnnotation = classifyStore.getAnnotationByKey(workflowTaskKeys.first).value
+      if firstTaskAnnotation.toString() is "0"
+        @props.storeSelection workflowTaskKeys.second, "N/A"
 
-    @setState({
-      currentTask: nextTask
-      nextTask: null}, -> @props.clearMultipleSelection())
+    @setState currentTask: task, ->
+      @props.clearMultipleSelection()
 
   onClickProgressBarButton: (selectedTask) ->
     @setState currentTask: selectedTask
 
   determineNextTask: (selectedTask) ->
-    # this needs some refactoring. index doesnt exist
     if selectedTask is workflowTaskKeys.first
-      selectedNextTask = ""
-      for answer in @props.workflow.tasks[selectedTask].answers
-        # annotation = _.find @props.annotations, (annotation) ->
-        #   annotation.task is selectedTask
-        if answer.label is @props.annotations[index].value.toString()
-          selectedNextTask = answer.next
-      selectedNextTask
+      annotation = _.find @props.annotations, (annotation) ->
+        annotation.key is workflowTaskKeys.first
+
+      for answer in @props.workflow.tasks[workflowTaskKeys.first].answers
+        break if answer?.label?.toString() is annotation?.value.toString()
+
+      answer.next
     else
       @props.workflow.tasks[selectedTask].next
 
@@ -78,13 +74,13 @@ module.exports = React.createClass
       @setState nextTask: nextTask
 
     if taskType is "multiple"
-      @props.storeMultipleSelection(question, answer, @state.currentTask)
+      @props.storeMultipleSelection @state.currentTask, answer
       @setOptionsState(event.target) if @state.currentTask is workflowTaskKeys.third # Add animal step
     else if taskType is "single"
-      @props.storeSelection(question, answer, @state.currentTask)
+      @props.storeSelection @state.currentTask, answer
 
   onClickMinus: ->
-    numberInput = @state.numberInput
+    numberInput = classifyStore.getAnnotationByKey(workflowTaskKeys.first).value.toString()
 
     if numberInput is "0"
       numberInput
@@ -93,29 +89,19 @@ module.exports = React.createClass
     else
       numberInput--
 
-    @setState numberInput: numberInput, -> @getNextTask()
+    @props.storeSelection workflowTaskKeys.first, numberInput
 
   onClickPlus: ->
-    numberInput = @state.numberInput
+    numberInput = classifyStore.getAnnotationByKey(workflowTaskKeys.first).value.toString()
 
-    if numberInput is 4
+    if numberInput is "4"
       numberInput = "5+"
     else if numberInput is "5+"
       numberInput
     else
       numberInput++
 
-    @setState numberInput: numberInput, -> @getNextTask()
-
-  getNextTask: ->
-    nextTask = ''
-    numberInput = @state.numberInput.toString()
-
-    for answer in @props.workflow.tasks[@state.currentTask].answers
-      if numberInput is answer.label
-        nextTask = answer.next
-
-    @setState nextTask: nextTask
+    @props.storeSelection workflowTaskKeys.first, numberInput
 
   setOptionsState: (checkedSelection) ->
     inputs = React.findDOMNode(@).querySelectorAll('input')
@@ -147,13 +133,14 @@ module.exports = React.createClass
     input.disabled = false
     input.parentNode.classList.remove 'disabled'
 
-  onClickFinish: (summary) ->
+  onClickFinish: ->
     classifyActions.finishClassification()
-    @showTask(summary)
+    @showTask 'summary'
     @props.clearMultipleSelection()
 
-  resetNumberInput: ->
-    @setState numberInput: "0"
+  onClickNextVideo: ->
+    classifyActions.getNextSubject()
+    @showTask workflowTaskKeys.first
 
   render: ->
     task = @props.workflow.tasks[@state.currentTask]
@@ -163,7 +150,10 @@ module.exports = React.createClass
         if @state.currentTask isnt 'summary'
           <div className="task">
             <p className="question">{task.question}</p>
-            <ProgressBar currentTask={@state.currentTask} onClickProgressBarButton={@onClickProgressBarButton} annotations={@props.annotations} />
+            <ProgressBar
+              currentTask={@state.currentTask}
+              onClickProgressBarButton={@onClickProgressBarButton}
+              annotations={@props.annotations} />
             {switch task.type
               when "multiple"
                 <div className="task-checkbox-container">
@@ -174,29 +164,35 @@ module.exports = React.createClass
                     </label>}
                 </div>
               when "single"
+                firstTaskAnnotation = classifyStore.getAnnotationByKey workflowTaskKeys.first
+
                 <fieldset>
                   <button type="button" className="minus-button" value="-" onClick={@onClickMinus}>-</button>
-                  <input ref="numberInput" type="text" className="number-input" readOnly value={@state.numberInput} />
+                  <input ref="numberInput" type="text" className="number-input" readOnly value={firstTaskAnnotation.value} />
                   <button type="button" className="plus-button" value="+" onClick={@onClickPlus}>+</button>
                 </fieldset>
             }
             {unless @state.currentTask is workflowTaskKeys.third
+              secondTaskAnnotation = classifyStore.getAnnotationByKey workflowTaskKeys.second
+
               <div className="workflow-action">
                 <p className="help-text">{task.help}</p>
-                <button ref="nextButton" className="action-button" type="button" onClick={@showTask.bind(null, @state.nextTask)} disabled={@state.currentTask is workflowTaskKeys.second and (!@props.annotations[1].value? or @props.annotations[1].value?.length is 0)}>
+                <button ref="nextButton" className="action-button" type="button" onClick={@showTask.bind(null, @determineNextTask(@state.currentTask))} disabled={@state.currentTask is workflowTaskKeys.second and (!secondTaskAnnotation.value? or secondTaskAnnotation.value?.length is 0)}>
                   <Translate content="task.buttons.next" />
                 </button>
               </div>
             else
               <div className="workflow-action">
-                <button ref="finishButton" className="action-button" type="button" onClick={@onClickFinish.bind(null, 'summary')} disabled={!@props.annotations[2].value? or @props.annotations[2].value?.length is 0}>
+                <button ref="finishButton" className="action-button" type="button" onClick={@onClickFinish} disabled={!@props.annotations[2].value? or @props.annotations[2].value?.length is 0}>
                   <Translate content="task.buttons.finish" />
                 </button>
               </div>
             }
           </div>
         else
-          <Summary annotations={@props.annotations} showTask={@showTask} firstTask={@props.firstTask} resetNumberInput={@resetNumberInput} />
+          <Summary
+            annotations={@props.annotations}
+            onClickNextVideo={@onClickNextVideo} />
       }
     </ReactCSSTransitionGroup>
 
@@ -254,13 +250,6 @@ ProgressBar = React.createClass
 Summary = React.createClass
   displayName: "Summary"
 
-  onClickNextVideo: ->
-    classifyActions.saveClassification()
-    classifyActions.getNextSubject()
-      .then =>
-        @props.showTask(@props.firstTask)
-        @props.resetNumberInput()
-
   render: ->
     batNoun =
       if @props.annotations[0].value is 0
@@ -305,7 +294,7 @@ Summary = React.createClass
       </p>
       <div>TO DO: favorite button, social media buttons</div>
       <div className="workflow-action">
-        <button ref="nextVideoButton" className="action-button" type="button" onClick={@onClickNextVideo}>
+        <button ref="nextVideoButton" className="action-button" type="button" onClick={@props.onClickNextVideo}>
           <Translate content="task.buttons.nextVideo" />
         </button>
       </div>

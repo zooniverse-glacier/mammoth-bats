@@ -11,6 +11,8 @@ Reflux = require 'reflux'
 classifyStore = require '../../stores/classify-store'
 classifyActions = require '../../actions/classify-actions'
 
+workflowTaskKeys = require '../../lib/workflow-task-keys'
+
 counterpart.registerTranslations 'en',
   classifyPage:
     help:
@@ -18,19 +20,16 @@ counterpart.registerTranslations 'en',
 
 module.exports = React.createClass
   displayName: "Classify"
-  mixins: [Reflux.ListenerMixin, Reflux.connect(classifyStore, "classificationData")]
+  mixins: [Reflux.ListenerMixin, Reflux.connect(classifyStore, 'classificationData')]
 
   getInitialState: ->
-    firstTask: null
+    currentTask: null
     multipleSelectionAnswers: []
     playbackRate: 1
 
   componentDidMount: ->
     @listenTo classifyStore, (classificationData) ->
-      @setState firstTask: classificationData?.workflow?.first_task, ->
-        window.batsTasks = @state.classificationData?.workflow?.tasks
-    , (classificationData) ->
-      @setState firstTask: classificationData?.workflow?.first_task
+      @setState currentTask: workflowTaskKeys.first
 
   onClickPlaybackRateButton: ({currentTarget}) ->
     subjectVideo = React.findDOMNode(@refs.subjectVideo)
@@ -39,26 +38,19 @@ module.exports = React.createClass
 
     @setState playbackRate: parseFloat(playbackRate)
 
-  storeMultipleSelection: (question, answer, currentTask) ->
-    annotationIndex = currentTask.slice(1)
-    currentAnswers =
-      if @state.classificationData.classification.annotations[annotationIndex].value?.length > 0
-        @state.classificationData.classification.annotations[annotationIndex].value
-      else
-        @state.multipleSelectionAnswers
-    currentAnswersIndex = currentAnswers.indexOf(answer)
+  storeMultipleSelection: (currentTask, answer) ->
+    currentAnnotation = _.find @state.classificationData.classification.annotations, (annotation) ->
+      currentTask is annotation.key
+    currentAnnotation.value ?= []
 
+    currentAnswersIndex = currentAnnotation.value.indexOf answer
     if currentAnswersIndex > -1
-      currentAnswers.splice currentAnswersIndex, 1
-      @setState({multipleSelectionAnswers: currentAnswers}, ->
-        @storeSelection(question, @state.multipleSelectionAnswers, currentTask))
+      currentAnnotation.value.splice currentAnswersIndex, 1
     else
-      currentAnswers.push answer
-      @setState({multipleSelectionAnswers: currentAnswers}, ->
-        @storeSelection(question, @state.multipleSelectionAnswers, currentTask))
+      currentAnnotation.value.push answer
 
-  storeSelection: (question, answer) ->
-    annotation = task: question, value: answer
+  storeSelection: (key, answer) ->
+    annotation = key: key, value: answer
     classifyActions.updateAnnotation annotation
 
   clearMultipleSelection: ->
@@ -109,10 +101,10 @@ module.exports = React.createClass
         </section>
         <section className="questions-container">
           <img className="batman-placeholder" src="./assets/batman-placeholder.png" alt="bat icon placeholder" />
-          {if @state.classificationData?.workflow?.tasks? and @state.firstTask?
+          {if @state.classificationData?.workflow?.tasks? and @state.currentTask?
             <div className="task-container">
               <Task
-                firstTask={@state.firstTask}
+                task={@state.currentTask}
                 workflow={@state.classificationData?.workflow}
                 annotations={@state.classificationData?.classification.annotations}
                 storeSelection={@storeSelection}
