@@ -1,8 +1,7 @@
 React = require 'react/addons'
 UserStore = require '../stores/user-store'
 ZooniverseLogo = require './zooniverse-logo'
-LoginDialog = require '../partials/login-dialog'
-alert = require '../lib/alert'
+
 Translate = require 'react-translate-component'
 counterpart = require 'counterpart'
 
