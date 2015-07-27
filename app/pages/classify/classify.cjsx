@@ -24,6 +24,7 @@ module.exports = React.createClass
 
   getInitialState: ->
     playbackRate: 1
+    loading: !classifyStore.loading
 
   onClickPlaybackRateButton: ({currentTarget}) ->
     subjectVideo = React.findDOMNode(@refs.subjectVideo)
@@ -47,6 +48,10 @@ module.exports = React.createClass
     annotation = key: key, value: answer
     classifyActions.updateAnnotation annotation
 
+  onVideoLoad: ->
+    console.log 'loading video'
+    # to do: break video out into own component and manage loading state
+
   render: ->
     activePlaybackRateStyle = {backgroundColor: "#92a2b3", color: "black", border: "solid 2px transparent"}
 
@@ -56,50 +61,47 @@ module.exports = React.createClass
         mediaSrcs["#{Object.keys(location)[0]}"] = location["#{Object.keys(location)[0]}"]
 
     <div className="classify-page">
-      <div className="classification">
-        <section className="subject">
-          {if @state.classificationData?.subject?
-            <div className="video-container">
-              <video
-                ref="subjectVideo"
-                controls
-                src={mediaSrcs["video/mp4"]}
-                poster={mediaSrcs["image/jpeg"]}
-                type="video/mp4"
-                width="100%"
-                height="100%"
-              >
-                Your browser does not support the video format. Please upgrade your browser.
-              </video>
-              <div className="playback-rate-controls">
-                <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 0.25} type="button" onClick={@onClickPlaybackRateButton} value="0.25">
-                  &#188;x
-                </button>
-                <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 0.5} type="button" onClick={@onClickPlaybackRateButton} value="0.5">
-                  &#189;x
-                </button>
-                <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 1} type="button" onClick={@onClickPlaybackRateButton} value="1">
-                  1x
-                </button>
-                <span className="playback-controls-label"><Translate content="classifyPage.help.playback" /></span>
-              </div>
-            </div>
-          else
-            <div style={width: '400px', height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center'}>
-              <LoadingIndicator />
-            </div>
-          }
-        </section>
-        {if @state.classificationData?.workflow?.tasks?
-          <Task
-            workflow={@state.classificationData?.workflow}
-            annotations={@state.classificationData?.classification.annotations}
-            storeSelection={@storeSelection}
-            storeMultipleSelection={@storeMultipleSelection}
-          />
-        else
-          <div style={display: 'flex', justifyContent: 'center', alignItems: 'center'}>
-            <LoadingIndicator />
-          </div>}
-      </div>
+      {if @state.loading is true
+        <div style={display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100vh'}>
+          <LoadingIndicator />
+        </div>
+      else
+        <div className="classification">
+          <section className="subject">
+            {if @state.classificationData?.subject?
+              <div className="video-container">
+                <video
+                  ref="subjectVideo"
+                  controls
+                  src={mediaSrcs["video/mp4"]}
+                  poster={mediaSrcs["image/jpeg"]}
+                  type="video/mp4"
+                  width="100%"
+                  height="100%"
+                  onLoad={@onVideoLoad()}
+                >
+                  Your browser does not support the video format. Please upgrade your browser.
+                </video>
+                <div className="playback-rate-controls">
+                  <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 0.25} type="button" onClick={@onClickPlaybackRateButton} value="0.25">
+                    &#188;x
+                  </button>
+                  <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 0.5} type="button" onClick={@onClickPlaybackRateButton} value="0.5">
+                    &#189;x
+                  </button>
+                  <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 1} type="button" onClick={@onClickPlaybackRateButton} value="1">
+                    1x
+                  </button>
+                  <span className="playback-controls-label"><Translate content="classifyPage.help.playback" /></span>
+                </div>
+              </div>}
+          </section>
+          {if @state.classificationData?.classification?
+            <Task
+              workflow={@state.classificationData?.workflow}
+              annotations={@state.classificationData?.classification.annotations}
+              storeSelection={@storeSelection}
+              storeMultipleSelection={@storeMultipleSelection}
+            />}
+        </div>}
     </div>

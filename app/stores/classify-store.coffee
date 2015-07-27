@@ -16,6 +16,8 @@ ClassifyStore = Reflux.createStore
   getInitialState: ->
     @data
 
+  loading: true
+
   getWorkflow: (@project = null) ->
     unless @project
       return throw new Error 'cannot fetch workflows for project'
@@ -68,6 +70,8 @@ ClassifyStore = Reflux.createStore
       subject: subject
       classification: classification
 
+    @loading = false
+
     @trigger @data
 
   onUpdateAnnotation: (updatedAnnotation) ->
@@ -90,6 +94,7 @@ ClassifyStore = Reflux.createStore
       .save()
       .then (classification) ->
         classification.destroy()
+        @loading = true
       .catch (error) ->
         console.log 'error saving c'
 

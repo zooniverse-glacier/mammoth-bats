@@ -192,6 +192,7 @@ module.exports = React.createClass
               </div>
             else
               <div className="workflow-action">
+                <br />
                 <button ref="finishButton" className="action-button" type="button" onClick={@onClickFinish} disabled={!@props.annotations[2].value? or @props.annotations[2].value?.length is 0}>
                   <Translate content="task.buttons.finish" />
                 </button>
@@ -232,7 +233,7 @@ Summary = React.createClass
       <p>
         <Translate number={@props.annotations[0].value} batNoun={batNoun} content="task.summary.firstTask" />
       </p>
-      {unless @props.annotations[1].value is "N/A"
+      {unless @props.annotations[1].value?.length is 0
         <p>
           <Translate secondTaskPossessive={secondTaskPossessive} content="task.summary.secondTask" />
           <ul>
