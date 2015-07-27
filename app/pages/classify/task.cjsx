@@ -1,7 +1,6 @@
 React = require 'react/addons'
 ReactCSSTransitionGroup = React.addons.CSSTransitionGroup
 _ = require 'underscore'
-classnames = require 'classnames'
 
 counterpart = require 'counterpart'
 Translate = require 'react-translate-component'
@@ -11,6 +10,8 @@ classifyStore = require '../../stores/classify-store'
 classifyActions = require '../../actions/classify-actions'
 
 workflowTaskKeys = require '../../lib/workflow-task-keys'
+
+ProgressBar = require './progress-bar'
 
 counterpart.registerTranslations 'en',
   task:
@@ -42,7 +43,7 @@ module.exports = React.createClass
     currentTask: workflowTaskKeys.first
 
   componentDidMount: ->
-    @showTask @props.task
+    @showTask @state.currentTask
 
   showTask: (task) ->
     if @state.currentTask is workflowTaskKeys.first
@@ -55,7 +56,7 @@ module.exports = React.createClass
       hoveringOver: null
 
   onClickProgressBarButton: (selectedTask) ->
-    @setState currentTask: selectedTask
+    @setState currentTask: selectedTask, -> @reloadAnnotations()
 
   determineNextTask: (selectedTask) ->
     if selectedTask is workflowTaskKeys.first
@@ -69,19 +70,15 @@ module.exports = React.createClass
     else
       @props.workflow.tasks[selectedTask].next
 
-  reloadAnnotations: (selectedTask, index) ->
+  reloadAnnotations: ->
     inputs = React.findDOMNode(@).querySelectorAll 'input'
 
     for input in inputs
-      for annotation in @props.annotations[index].value
+      annotations = _.findWhere @props.annotations, key: @state.currentTask
+      for annotation in annotations.value
         input.checked = true if input.value is annotation
 
-  handleClick: (question, answer, taskType, nextTask, event) ->
-    if @state.currentTask is Object.keys(@props.workflow.tasks)[Object.keys(@props.workflow.tasks).length - 1] #last task
-      @setState nextTask: "summary"
-    else
-      @setState nextTask: nextTask
-
+  handleClick: (question, answer, taskType) ->
     if taskType is "multiple"
       @props.storeMultipleSelection @state.currentTask, answer
       @setOptionsState(event.target) if @state.currentTask is workflowTaskKeys.third # Add animal step
@@ -171,8 +168,8 @@ module.exports = React.createClass
               when "multiple"
                 <div className="task-checkbox-container">
                   {for answer in task.answers
-                    <label key={answer.label} onMouseOver={@handleHover.bind null, camelize answer.label} className="task-checkbox">
-                      <input type="checkbox" name={task.question} value={answer.label} onClick={@handleClick.bind(null, task.question, answer.label, task.type, task.next)} />
+                    <label key={answer.label} onMouseOver={@handleHover.bind null, camelize answer.label} onMouseOut={@handleHover.bind null, null} className="task-checkbox">
+                      <input type="checkbox" name={task.question} value={answer.label} onClick={@handleClick.bind(null, task.question, answer.label, task.type)} />
                       {answer.label}
                     </label>}
                 </div>
@@ -205,57 +202,6 @@ module.exports = React.createClass
           <Summary
             annotations={@props.annotations}
             onClickNextVideo={@onClickNextVideo} />}
-    </div>
-
-ProgressBar = React.createClass
-  displayName: "ProgressBar"
-
-  render: ->
-    disabledCondition = @props.currentTask is "summary"
-
-    taskOneClasses = classnames
-      "progress-bar-button-container": true
-      active: @props.currentTask is workflowTaskKeys.first
-      done: @props.currentTask isnt workflowTaskKeys.first and @props.annotations[0].value?
-
-    taskTwoClasses = classnames
-      "progress-bar-button-container": true
-      active: @props.currentTask is workflowTaskKeys.second
-      done: @props.currentTask isnt workflowTaskKeys.second and @props.annotations[1].value?
-      skip: @props.annotations[1].value? is "N/A"
-
-    taskThreeClasses = classnames
-      "progress-bar-button-container": true
-      active: @props.currentTaks is workflowTaskKeys.third
-      done: @props.currentTask isnt workflowTaskKeys.third and @props.annotations[2].value?
-
-    <div className="progress-bar">
-      <div ref="taskOne" className={taskOneClasses}>
-        <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, workflowTaskKeys.first)} disabled={disabledCondition}>
-          {unless @props.annotations[0].value?
-            "1"
-          else
-            <img src="./assets/checkmark.svg" alt="checkmark" />}
-        </button>
-      </div>
-      <div ref="taskTwo" className={taskTwoClasses}>
-        {if @props.currentTask is workflowTaskKeys.second or @props.annotations[1].value?
-          <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, workflowTaskKeys.second)} disabled={disabledCondition}>
-            {unless @props.annotations[1].value?
-              "2"
-            else
-              <img src="./assets/checkmark.svg" alt="checkmark" />}
-          </button>}
-      </div>
-      <div ref="taskThree" className={taskThreeClasses}>
-        {if @props.currentTask is workflowTaskKeys.third or @props.annotations[2].value?
-          <button className="progress-bar-button" type="button" onClick={@props.onClickProgressBarButton.bind(null, workflowTaskKeys.third)} disabled={disabledCondition}>
-            {unless @props.annotations[2].value?
-              "3"
-            else
-              <img src="./assets/checkmark.svg" alt="checkmark" />}
-          </button>}
-      </div>
     </div>
 
 Summary = React.createClass

@@ -1,0 +1,57 @@
+.progress-bar
+  display: flex
+  justify-content: space-around
+  margin: 1em 0
+
+  .progress-bar-button-container
+    background-color: #d3dbe2
+    border-radius: 2px
+    display: inline-flex
+    height: 4px
+    justify-content: center
+    margin: 0 5px
+    position: relative
+    width: 80px
+
+    &.active
+      background-color: #3a4959
+      border-right: solid 2px #d3dbe2
+      border-right-width: 40px
+      justify-content: flex-end
+      width: 40px
+
+      .progress-bar-button
+        right: -13px
+
+    &.skip
+      background: linear-gradient(to right, #d3dbe2 50%, white 50%)
+      background-size: 18px 1px
+
+    &.done
+      background-color: #3a4959
+
+      .progress-bar-button
+        background-color: #3a4959
+        height: 20px
+        top: -0.7em
+        width: 20px
+
+    .progress-bar-button, .skip-pseudo-button
+      @extends $reset-button
+      background-color: #92a2b3
+      border-radius: 50%
+      font-size: 0.8em
+      color: white
+      height: 26px
+      position: relative
+      top: -0.9em
+      width: 26px
+      z-index: 1
+
+    .skip-pseudo-button
+      background-color: #d3dbe2
+      height: 20px
+      text-align: center
+      top: -0.7em
+      width: 20px
+

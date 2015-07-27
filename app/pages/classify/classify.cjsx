@@ -23,7 +23,6 @@ module.exports = React.createClass
   mixins: [Reflux.ListenerMixin, Reflux.connect(classifyStore, 'classificationData')]
 
   getInitialState: ->
-    currentTask: workflowTaskKeys.first
     playbackRate: 1
 
   onClickPlaybackRateButton: ({currentTarget}) ->
@@ -91,9 +90,8 @@ module.exports = React.createClass
             </div>
           }
         </section>
-        {if @state.classificationData?.workflow?.tasks? and @state.currentTask?
+        {if @state.classificationData?.workflow?.tasks?
           <Task
-            task={@state.currentTask}
             workflow={@state.classificationData?.workflow}
             annotations={@state.classificationData?.classification.annotations}
             storeSelection={@storeSelection}
