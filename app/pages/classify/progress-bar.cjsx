@@ -19,7 +19,7 @@ module.exports = React.createClass
       "progress-bar-button-container": true
       active: @props.currentTask is workflowTaskKeys.second
       done: @props.currentTask isnt workflowTaskKeys.second and @props.annotations[1].value?.length > 0
-      skip: @props.currentTask is workflowTaskKeys.third and @props.annotations[1].value?.length is 0
+      skip: @props.currentTask is workflowTaskKeys.third and @props.annotations[1].value?.length is 0 or @props.currentTask is 'summary' and @props.annotations[1].value?.length is 0
 
     taskThreeClasses = classnames
       "progress-bar-button-container": true
@@ -43,7 +43,7 @@ module.exports = React.createClass
             else if @props.currentTask is workflowTaskKeys.third or (@props.currentTask isnt workflowTaskKeys.second) and (@props.annotations[1].value?.length > 0)
               <img src="./assets/checkmark.svg" alt="checkmark icon" />}
           </button>
-        else if @props.currentTask is workflowTaskKeys.third and @props.annotations[1].value?.length is 0
+        else if @props.currentTask is workflowTaskKeys.third or @props.currentTask is 'summary' and @props.annotations[1].value?.length is 0
           <span className="skip-pseudo-button"><img src="./assets/ex-icon.svg" alt="skipped icon" /></span>}
       </div>
       <div ref="taskThree" className={taskThreeClasses}>

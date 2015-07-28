@@ -17,12 +17,7 @@ Main = React.createClass
     project: null
 
   onUserChange: (user) ->
-    @setState { user }, @getProject
-
-  getProject: ->
-    api.type('projects').get(projectConfig.projectId)
-      .then (project) =>
-        @setState { project }
+    @setState { user }
 
   render: ->
     <div className="main">

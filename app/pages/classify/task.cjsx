@@ -11,6 +11,7 @@ classifyActions = require '../../actions/classify-actions'
 
 workflowTaskKeys = require '../../lib/workflow-task-keys'
 
+FavoritesButton = require '../../components/favorites-button'
 ProgressBar = require './progress-bar'
 
 counterpart.registerTranslations 'en',
@@ -20,13 +21,9 @@ counterpart.registerTranslations 'en',
       finish: "finished!"
       nextVideo: "next video"
     summary:
-      firstTask: "You saw %(number)s %(batNoun)s."
-      secondTask: "Doing %(secondTaskPossessive)s activities:"
-      thirdTask: "Near %(thirdTaskPossessive)s:"
+      firstTask: "%(number)s %(batNoun)s"
       batSingular: "bat"
       batPlural: "bats"
-      this: "this"
-      these: "these"
 
 camelize = (str) ->
   str.replace /(?:^\w|[A-Z]|\b\w)/g, (letter, index) ->
@@ -204,9 +201,15 @@ module.exports = React.createClass
             }
           </div>
         else
-          <Summary
-            annotations={@props.annotations}
-            onClickNextVideo={@onClickNextVideo} />}
+          <div className="task-summary-container">
+            <ProgressBar
+              currentTask={@state.currentTask}
+              onClickProgressBarButton={@onClickProgressBarButton}
+              annotations={@props.annotations} />
+            <Summary
+              annotations={@props.annotations}
+              onClickNextVideo={@onClickNextVideo} />
+          </div>}
     </div>
 
 Summary = React.createClass
@@ -221,42 +224,26 @@ Summary = React.createClass
       else
         counterpart "task.summary.batPlural"
 
-    secondTaskPossessive =
-      if @props.annotations[1].length is 1
-        counterpart "task.summary.this"
-      else
-        counterpart "task.summary.these"
-
-    thirdTaskPossessive =
-      if @props.annotations[2].length is 1
-        counterpart "task.summary.this"
-      else
-        counterpart "task.summary.these"
-
     <div className="task-summary">
-      <p>
-        <Translate number={@props.annotations[0].value} batNoun={batNoun} content="task.summary.firstTask" />
-      </p>
-      {unless @props.annotations[1].value?.length is 0
+      <div className="task-summary-lists">
         <p>
-          <Translate secondTaskPossessive={secondTaskPossessive} content="task.summary.secondTask" />
+          <i className="fa fa-check-circle-o fa-fw"></i><Translate number={@props.annotations[0].value} batNoun={batNoun} content="task.summary.firstTask" />
+        </p>
+        {unless @props.annotations[1].value?.length is 0
           <ul>
             {for activity, i in @props.annotations[1].value
-              <li key={i}>{activity}</li>
+              <li key={i} style={listStyle: "none"}><i className="fa fa-check-circle-o fa-fw"></i>{activity}</li>
             }
-          </ul>
-        </p>}
-      <p>
-        <Translate thirdTaskPossessive={thirdTaskPossessive} content="task.summary.thirdTask" />
+          </ul>}
         <ul>
           {for animal, i in @props.annotations[2].value
-            <li key={i}>{animal}</li>
+            <li key={i} style={listStyle: "none"}><i className="fa fa-check-circle-o fa-fw"></i>{animal}</li>
           }
         </ul>
-      </p>
-      <div>TO DO: favorite button, social media buttons</div>
+      </div>
       <div className="workflow-action">
-        <button ref="nextVideoButton" className="action-button" type="button" onClick={@props.onClickNextVideo}>
+        <FavoritesButton />
+        <button ref="nextVideoButton" className="action-button next-video-button" type="button" onClick={@props.onClickNextVideo}>
           <Translate content="task.buttons.nextVideo" />
         </button>
       </div>
@@ -271,10 +258,10 @@ FieldGuide = React.createClass
 
   render: ->
     <div className="field-guide">
-      {if !@props.toDisplay?
+      {if !@props.toDisplay? or @props.toDisplay is 'none'
         <img className="batman-placeholder" src="./assets/batman-placeholder.png" alt="bat icon placeholder" />}
 
       {if @props.toDisplay? && @props.toDisplay in Object.keys(fieldGuideContent)
         content = fieldGuideContent[@props.toDisplay]
-        <p>{content}</p>}
+        <p dangerouslySetInnerHTML={{__html: content}} />}
     </div>

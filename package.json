@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "gulp"
+    "start": "gulp",
+    "deploy-to-staging": "gulp clean && gulp build && publisssh ./public/build demo.zooniverse.org/bats-staging && gulp clean"
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "jsx-loader": "~0.13.2",
     "nib": "~1.1.0",
     "node-libs-browser": "^0.5.2",
+    "publisssh": "~1.0.0",
     "stylus": "~0.51.1",
     "webpack": "~1.10.1"
   },

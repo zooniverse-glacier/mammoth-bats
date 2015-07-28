@@ -112,4 +112,6 @@ gulp.task('serve', function(){
   createServer(config.server.port);
 });
 
+gulp.task('build', ['stylus', 'html', 'images', 'webpack']);
+
 gulp.task('default', ['serve', 'watch']);
