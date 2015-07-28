@@ -51,12 +51,14 @@ module.exports = React.createClass
       if firstTaskAnnotation.toString() is "0"
         @props.storeSelection workflowTaskKeys.second, []
 
-    @setState
+    @setState({
       currentTask: task
-      hoveringOver: null
+      hoveringOver: null}, -> @reloadAnnotations())
 
   onClickProgressBarButton: (selectedTask) ->
-    @setState currentTask: selectedTask, -> @reloadAnnotations()
+    @setState({
+      currentTask: selectedTask
+      hoveringOver: null}, -> @reloadAnnotations())
 
   determineNextTask: (selectedTask) ->
     if selectedTask is workflowTaskKeys.first
@@ -72,11 +74,14 @@ module.exports = React.createClass
 
   reloadAnnotations: ->
     inputs = React.findDOMNode(@).querySelectorAll 'input'
+    annotations = classifyStore.getAnnotationByKey(@state.currentTask).value if @state.currentTask isnt 'summary'
 
-    for input in inputs
-      annotations = _.findWhere @props.annotations, key: @state.currentTask
-      for annotation in annotations.value
-        input.checked = true if input.value is annotation
+    if annotations?.length > 0
+      for input in inputs
+        for annotation in annotations
+          if input.value is annotation
+            input.checked = true
+            @setOptionsState input
 
   handleClick: (question, answer, taskType) ->
     if taskType is "multiple"
@@ -192,8 +197,7 @@ module.exports = React.createClass
               </div>
             else
               <div className="workflow-action">
-                <br />
-                <button ref="finishButton" className="action-button" type="button" onClick={@onClickFinish} disabled={!@props.annotations[2].value? or @props.annotations[2].value?.length is 0}>
+                <button ref="finishButton" className="action-button finish-button" type="button" onClick={@onClickFinish} disabled={!@props.annotations[2].value? or @props.annotations[2].value?.length is 0}>
                   <Translate content="task.buttons.finish" />
                 </button>
               </div>
