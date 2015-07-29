@@ -8,7 +8,7 @@ module.exports = Reflux.createStore
     @listenTo classifyStore, @getFavorites
 
   getInitialState: ->
-    @favorites
+    @favorited
 
   getFavorites: ->
     query =
@@ -20,17 +20,48 @@ module.exports = Reflux.createStore
         console.log 'favorites', favorites
         @favorites = if favorites? then favorites else null
         @getSubjectInCollection(@favorites)
-      .then =>
-        @toggleFavorite()
 
   getSubjectInCollection: (favorites) ->
-    subjectID = classifyStore.data.subject.id
+    @subjectID = classifyStore.data.subject.id
     if favorites?
-      favorites.get('subjects', id: subjectID)
+      favorites.get('subjects', id: @subjectID)
         .then ([subject]) ->
-          subject
+          @favorited = subject?
+
+  createFavorites: ->
+    project = projectConfig.projectId
+    display_name = "Favorites #{project}"
+    console.log 'display_name', display_name
+    subjects = [@subjectID]
+    favorite = true
+
+    links = {subjects}
+    links.project = project
+    collection = {favorite, display_name, links}
+
+    api.type('collections').create(collection).save().then =>
+      console.log 'favorites created'
+      @favorited = true
+      @trigger @favorited
+
+  removeSubjectFrom: ->
+    console.log 'removeSubjectFrom'
+    @favorites.removeLink('subjects', @subjectID.toString())
+    @trigger @favorited
+
+  addSubjectTo: ->
+    console.log @subjectID.toString()
+    @favorites.addLink('subjects', @subjectID.toString())
+    @trigger @favorited
 
   toggleFavorite: ->
-    console.log 'TO DO: toggleFavorites'
-    # if !@favorites?
-    #   @createFavorites
+    console.log 'toggling favorites', @favorites
+    if not @favorites?
+      console.log 'no existing favorites'
+      @createFavorites()
+    else if @favorited
+      console.log 'remove from favorites'
+      @removeSubjectFrom()
+    else
+      console.log 'add to favorites'
+      @addSubjectTo()

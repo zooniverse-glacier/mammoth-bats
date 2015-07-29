@@ -20,7 +20,7 @@ counterpart.registerTranslations 'en',
 
 module.exports = React.createClass
   displayName: "Classify"
-  mixins: [Reflux.ListenerMixin, Reflux.connect(classifyStore, 'classificationData')]
+  mixins: [Reflux.connect(classifyStore, 'classificationData')]
 
   getInitialState: ->
     playbackRate: 1
@@ -102,6 +102,7 @@ module.exports = React.createClass
               annotations={@state.classificationData?.classification.annotations}
               storeSelection={@storeSelection}
               storeMultipleSelection={@storeMultipleSelection}
+              user={@props.user}
             />}
         </div>}
     </div>

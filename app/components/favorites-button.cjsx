@@ -3,22 +3,27 @@ classnames = require 'classnames'
 
 Reflux = require 'reflux'
 favoritesStore = require '../stores/favorites-store'
+favoritesActions = require '../actions/favorites-actions'
 
 module.exports = React.createClass
   displayName: 'FavoritesButton'
   mixins: [Reflux.connect(favoritesStore, 'favorites')]
 
   getInitialState: ->
-    favorited: false
+    favorited: favoritesStore.favorited
 
   onClick: ->
-    @setState favorited: !@state.favorited
+    @setState({favorited: !@state.favorited}, ->
+      console.log favoritesStore.toggleFavorite()
+      favoritesStore.toggleFavorite()
+    )
 
   render: ->
+    disabledCondition = if @props.user? then false else true
     favoriteBtnClasses = classnames
       'favorite-button': true
       favorited: @state.favorited is true
 
-    <button className={favoriteBtnClasses} type="button" onClick={@onClick}>
+    <button ref="favoriteBtn" className={favoriteBtnClasses} type="button" onClick={@onClick} disabled={disabledCondition}>
       <i className="fa fa-heart#{unless @state.favorited then '-o' else ''} fa-2x"></i>
     </button>

@@ -208,7 +208,8 @@ module.exports = React.createClass
               annotations={@props.annotations} />
             <Summary
               annotations={@props.annotations}
-              onClickNextVideo={@onClickNextVideo} />
+              onClickNextVideo={@onClickNextVideo}
+              user={@props.user} />
           </div>}
     </div>
 
@@ -242,7 +243,7 @@ Summary = React.createClass
         </ul>
       </div>
       <div className="workflow-action">
-        <FavoritesButton />
+        <FavoritesButton user={@props.user} />
         <button ref="nextVideoButton" className="action-button next-video-button" type="button" onClick={@props.onClickNextVideo}>
           <Translate content="task.buttons.nextVideo" />
         </button>
