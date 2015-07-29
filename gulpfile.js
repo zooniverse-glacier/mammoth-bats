@@ -12,9 +12,10 @@ var path = require('path'),
     imagemin = require('gulp-imagemin'),
     rev = require('gulp-rev'),
     inject = require('gulp-inject'),
+    through2 = require('through2'),
     runSequence = require('run-sequence'),
     express = require('express'),
-    webpack = require('webpack-stream'),
+    webpack = require('webpack'),
     webpackConfig = require("./webpack.config.js"),
     webpackProductionConfig = require('./webpack-production.config.js');
 
@@ -62,8 +63,8 @@ var handleErrors = function() {
 
 var execWebpack = function(config){
   webpack((config), function(err, stats) {
-      if (err) new gutil.PluginError("execWebpack", err);
-      gutil.log(stats.toString({colors: true}));
+    if (err) new gutil.PluginError("execWebpack", err);
+    gutil.log(stats.toString({colors: true}));
   });
 }
 
@@ -91,7 +92,7 @@ gulp.task('images', function() {
 // copy html to build dir
 gulp.task('html', function() {
   var target = gulp.src(config.html.src);
-  var sources = gulp.src([dest + '/*.js', dest + '/*.css'], {read: false});
+  var sources = gulp.src([dest + '/*.css'], {read: false});
   return target.pipe(inject(sources, {ignorePath: 'public/build', addPrefix: '.', addRootSlash: false}))
     .on('error', handleErrors)
     .pipe(gulp.dest(config.html.dest));
@@ -105,7 +106,7 @@ gulp.task('stylus', function() {
     .pipe(gulp.dest(config.stylus.dest));
 });
 
-// compile stylus and move to build dir
+// compile stylus for production build and move to build dir
 gulp.task('stylus:build', function() {
   return gulp.src(config.stylus.src)
     .pipe(stylus({use: nib(), 'include css': true, errors: true}))
@@ -115,57 +116,54 @@ gulp.task('stylus:build', function() {
 });
 
 // start webpack
-gulp.task('webpack', function(){
-    // execWebpack(webpackConfig);
-    return gulp.src(config.js.src)
-      .pipe(webpack(webpackConfig))
-      // .on('error', handleErrors)
-      .pipe(gulp.dest(config.js.dest));
-    // callback();
-});
+gulp.task('webpack', function(callback){
+  execWebpack(webpackConfig);
+  callback();
+})
 
 // compile js for production build and move to build dir
-gulp.task("webpack:build", function() {
-    // modify some webpack config options
-    var myConfig = Object.create(webpackProductionConfig);
-    myConfig.plugins = myConfig.plugins.concat(
-        new webpack.DefinePlugin({
-            "process.env": {
-                // This has effect on the react lib size
-                "NODE_ENV": JSON.stringify("production")
-            }
-        }),
-        new webpack.optimize.UglifyJsPlugin()
+gulp.task("webpack:build", function(callback) {
+  // modify some webpack config options
+  var myConfig = Object.create(webpackProductionConfig);
+  myConfig.plugins = myConfig.plugins.concat(
+    new webpack.DefinePlugin({
+      "process.env": {
+        // This has effect on the react lib size
+        "NODE_ENV": JSON.stringify("production")
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin()
+  );
+
+  // run webpack
+  webpack(myConfig, function(err, stats) {
+    if(err) throw new gutil.PluginError("webpack:build", err);
+    gutil.log("[webpack:build]", stats.toString({
+        colors: true
+      })
     );
 
-    // run webpack
-    return gulp.src(config.js.src)
-      .pipe(webpack(myConfig))
+    // write the hashed main.js to /public/build/index.html
+    var jsFilename = stats.toJson().assetsByChunkName['main'];
+
+    return gulp.src('./public/build/index.html')
       .on('error', handleErrors)
-      .pipe(gulp.dest(config.js.dest));
-
-
-
-        // write the hashed main.js to /public/build/index.html
-        // var jsFilename = stats.toJson().assetsByChunkName['main'];
-
-        // return gulp.src('./public/build/index.html')
-        //     .on('error', handleErrors)
-            // .pipe(through2.obj(function (file, enc, tCb) {
-            //     file.contents = new Buffer(String(file.contents)
-            //         .replace('main.js', jsFilename));
-            //     this.push(file);
-            //     tCb();
-            // }))
-            // .pipe(gulp.dest(config.html.dest));
-        // callback();
-    // });
+      .pipe(through2.obj(function (file, enc, tCb) {
+        file.contents = new Buffer(String(file.contents)
+          .replace('main.js', jsFilename));
+        this.push(file);
+        tCb();
+      }))
+      .pipe(gulp.dest(config.html.dest));
+    callback();
+  });
 });
 
 gulp.task('watch', function(callback) {
     runSequence(
-    ['stylus', 'webpack', 'images'],
+    ['stylus', 'images'],
     'html',
+    'webpack',
     callback
   );
   gulp.watch(config.stylus.files, ['stylus']);
@@ -180,8 +178,9 @@ gulp.task('serve', function(){
 
 gulp.task('build', function(callback){
   runSequence(
-    ['stylus:build', 'webpack:build', 'images'],
+    ['stylus:build', 'images'],
     'html',
+    'webpack:build',
     callback
   );
 });
