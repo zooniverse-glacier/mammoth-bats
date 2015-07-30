@@ -3,7 +3,6 @@ classnames = require 'classnames'
 
 Reflux = require 'reflux'
 favoritesStore = require '../stores/favorites-store'
-favoritesActions = require '../actions/favorites-actions'
 
 module.exports = React.createClass
   displayName: 'FavoritesButton'
@@ -14,7 +13,6 @@ module.exports = React.createClass
 
   onClick: ->
     @setState({favorited: !@state.favorited}, ->
-      console.log favoritesStore.toggleFavorite()
       favoritesStore.toggleFavorite()
     )
 
