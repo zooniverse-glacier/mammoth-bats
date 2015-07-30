@@ -136,5 +136,5 @@ module.exports = React.createClass
               <LoadingIndicator />
             </div>}
         </section>
-      </div>}
+      </div>
     </div>
