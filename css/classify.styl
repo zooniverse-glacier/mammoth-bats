@@ -2,12 +2,22 @@
   height: 100vh
   padding: 10em 3vw
 
-  .loading-indicator-icon
-    color: white
+  .loading-indicator-container
+    align-items: center
+    display: flex
+    justify-content: center
+    height: 100%
+    min-height: 581px
+
+    .loading-indicator-icon
+      color: white
+      position: relative
+      z-index: 1
 
   .classification
     align-items: stretch
     display: flex
+    flex-wrap: wrap
     justify-content: center
     margin: 0 auto
     max-width: 1200px
@@ -38,9 +48,9 @@
           .playback-button
             @extends $reset-button
             background-color: transparent
-            border: solid 2px #92a2b3
+            border: solid 2px $medium-blue
             border-radius: 4px
-            color: #92a2b3
+            color: $medium-blue
             font-size: 0.8em
             letter-spacing: 0.1em
             margin-right: 0.5em
@@ -51,6 +61,25 @@
             color: rgba(146, 175, 205, 0.3)
             font-style: italic
             font-size: 0.8em
+
+        .assistive-buttons
+          bottom: -1.5em
+          position: absolute
+          right: 0.5em
+
+          .tutorial-button
+            @extends $reset-button
+            color: $medium-blue
+
+    .task-container
+      background-color: white
+      border-radius: 0 6px 6px 0
+      flex: 0 1 33%
+      max-width: 350px
+      padding: 1em
+
+      .loading-indicator-icon
+        color: black
 
 .batman-placeholder
   display: block

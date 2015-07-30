@@ -12,17 +12,11 @@
   opacity: 1
   transition: height 0.75s, opacity 0.75s ease-in-out
 
-.task-container
-  align-content: stretch
-  background-color: white
-  border-radius: 0 6px 6px 0
+.tasks
   display: flex
-  flex: 0 1 33%
   flex-direction: column
-  max-width: 350px
-  padding: 1em
 
-  .task
+  .task-individual
     align-items: center
     display: inline-flex
     flex-direction: column
@@ -74,11 +68,11 @@
       width: 100%
 
       .task-checkbox
-        background-color: #f1f3f5
-        border: solid 2px darken(#f1f3f5, 10%)
+        background-color: $task-gray
+        border: solid 2px darken($task-gray, 10%)
         border-radius: 4px
         box-sizing: border-box
-        color: #3a4959
+        color: $dark-blue
         display: block
         font-size: 0.8em
         margin: 0.5em
@@ -86,8 +80,8 @@
         width: 160px
 
         &.disabled
-          background-color: lighten(#f1f3f5, 20%)
-          border-color: lighten(#f1f3f5, 20%)
+          background-color: lighten($task-gray, 20%)
+          border-color: lighten($task-gray, 20%)
           color: rgba(0, 0, 0, 0.5)
 
 .workflow-action
@@ -112,7 +106,7 @@
 
   .action-button
     @extends $reset-button
-    background-color: #c5c64e
+    background-color: $lime-green
     border-radius: 6px
     color: white
     font-size: 1em
@@ -152,8 +146,8 @@
 
     .favorite-button
       @extends $reset-button
-      color: #3a4959
+      color: $dark-blue
 
     .next-video-button
-      background-color: #3a4959
+      background-color: $dark-blue
       margin-top: 1.75em

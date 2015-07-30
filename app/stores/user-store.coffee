@@ -30,7 +30,7 @@ module.exports = Reflux.createStore
     @getUser()
 
   getInitialState: ->
-    user: null
+    @user
 
   getUser: ->
     token = @_getToken()
@@ -83,3 +83,4 @@ module.exports = Reflux.createStore
   _removeToken: ->
     api.headers['Authorization'] = null
     localStorage.removeItem 'bearer_token'
+

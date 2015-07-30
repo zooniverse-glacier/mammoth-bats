@@ -1,3 +1,10 @@
+// colors
+$light-blue = #d3dbe2
+$medium-blue = #92a2b3
+$dark-blue = #3a4959
+$lime-green = #c5c64e
+$task-gray = #f1f3f5
+
 html, body
   font: 400 15px/1.5 "Open Sans", Arial, sans-serif
   margin: 0
@@ -24,16 +31,6 @@ $reset-button
   &:disabled
     cursor: inherit
     opacity: 0.3
-
-  &[data-busy]::after
-    animation: busy-button-animation 1s linear infinite alternate
-    background: linear-gradient(90deg, rgba(gray, 0), rgba(gray, 0.2), rgba(gray, 0))
-    bottom: 0
-    content: ""
-    left: 0
-    position: absolute
-    top: 0
-    right: 0
 
 $generic-heading
   font-size: 0.7em

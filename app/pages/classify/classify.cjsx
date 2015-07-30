@@ -5,6 +5,7 @@ _ = require 'underscore'
 counterpart = require 'counterpart'
 Translate = require 'react-translate-component'
 LoadingIndicator = require '../../components/loading-indicator'
+SlideTutorial = require '../../components/slide-tutorial'
 Task = require './task'
 
 Reflux = require 'reflux'
@@ -22,9 +23,22 @@ module.exports = React.createClass
   displayName: "Classify"
   mixins: [Reflux.connect(classifyStore, 'classificationData')]
 
+  videoLoaded: false
+
   getInitialState: ->
     playbackRate: 1
-    loading: !classifyStore.loading
+    tutorialIsOpen: false
+
+  componentDidMount: ->
+    # unless @props.user?
+    #   console.log '@props.user', @props.user
+    #   @openTutorial()
+
+  componentWillReceiveProps: (nextProps) ->
+    console.log nextProps
+    if nextProps.user?
+      console.log 'a user is logged in'
+      userStore.getUserClassificationCount()
 
   onClickPlaybackRateButton: ({currentTarget}) ->
     subjectVideo = React.findDOMNode(@refs.subjectVideo)
@@ -49,8 +63,14 @@ module.exports = React.createClass
     classifyActions.updateAnnotation annotation
 
   onVideoLoad: ->
-    console.log 'loading video'
+    @videoLoaded = true
     # to do: break video out into own component and manage loading state
+
+  openTutorial: ->
+    @setState tutorialIsOpen: true
+
+  closeTutorial: ->
+    @setState tutorialIsOpen: false
 
   render: ->
     activePlaybackRateStyle = {backgroundColor: "#92a2b3", color: "black", border: "solid 2px transparent"}
@@ -61,41 +81,48 @@ module.exports = React.createClass
         mediaSrcs["#{Object.keys(location)[0]}"] = location["#{Object.keys(location)[0]}"]
 
     <div className="classify-page">
-      {if @state.loading is true
-        <div style={display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100vh'}>
-          <LoadingIndicator />
-        </div>
-      else
-        <div className="classification">
-          <section className="subject">
-            {if @state.classificationData?.subject?
-              <div className="video-container">
-                <video
-                  ref="subjectVideo"
-                  controls
-                  src={mediaSrcs["video/mp4"]}
-                  poster={mediaSrcs["image/jpeg"]}
-                  type="video/mp4"
-                  width="100%"
-                  height="100%"
-                  onLoad={@onVideoLoad()}
-                >
-                  Your browser does not support the video format. Please upgrade your browser.
-                </video>
-                <div className="playback-rate-controls">
-                  <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 0.25} type="button" onClick={@onClickPlaybackRateButton} value="0.25">
-                    &#188;x
-                  </button>
-                  <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 0.5} type="button" onClick={@onClickPlaybackRateButton} value="0.5">
-                    &#189;x
-                  </button>
-                  <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 1} type="button" onClick={@onClickPlaybackRateButton} value="1">
-                    1x
-                  </button>
-                  <span className="playback-controls-label"><Translate content="classifyPage.help.playback" /></span>
-                </div>
-              </div>}
-          </section>
+      {if @state.tutorialIsOpen is true
+        <SlideTutorial closeTutorial={@closeTutorial} tutorialIsOpen={@state.tutorialIsOpen} />}
+      <div className="classification">
+        <section className="subject">
+          {if @videoLoaded is false
+            <div className="loading-indicator-container">
+              <LoadingIndicator />
+            </div>}
+          <div className="video-container">
+            <video
+              ref="subjectVideo"
+              controls
+              src={mediaSrcs["video/mp4"]}
+              poster={mediaSrcs["image/jpeg"]}
+              type="video/mp4"
+              width="100%"
+              height="100%"
+              style={minHeight: "581px"}
+              onload={@onVideoLoad()}
+            >
+              Your browser does not support the video format. Please upgrade your browser.
+            </video>
+            <div className="playback-rate-controls">
+              <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 0.25} type="button" onClick={@onClickPlaybackRateButton} value="0.25">
+                &#188;x
+              </button>
+              <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 0.5} type="button" onClick={@onClickPlaybackRateButton} value="0.5">
+                &#189;x
+              </button>
+              <button className="playback-button" style={activePlaybackRateStyle if @state.playbackRate is 1} type="button" onClick={@onClickPlaybackRateButton} value="1">
+                1x
+              </button>
+              <span className="playback-controls-label"><Translate content="classifyPage.help.playback" /></span>
+            </div>
+            <div className="assistive-buttons">
+              <button className="tutorial-button" type="button" onClick={@openTutorial}>
+                <i className="fa fa-question-circle fa-lg"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+        <section className="task-container">
           {if @state.classificationData?.classification?
             <Task
               workflow={@state.classificationData?.workflow}
@@ -103,6 +130,11 @@ module.exports = React.createClass
               storeSelection={@storeSelection}
               storeMultipleSelection={@storeMultipleSelection}
               user={@props.user}
-            />}
-        </div>}
+            />
+          else
+            <div className="loading-indicator-container">
+              <LoadingIndicator />
+            </div>}
+        </section>
+      </div>}
     </div>

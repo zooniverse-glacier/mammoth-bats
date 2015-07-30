@@ -4,7 +4,7 @@
   margin: 1em 0
 
   .progress-bar-button-container
-    background-color: #d3dbe2
+    background-color: $light-blue
     border-radius: 2px
     display: inline-flex
     height: 4px
@@ -14,8 +14,8 @@
     width: 80px
 
     &.active
-      background-color: #3a4959
-      border-right: solid 2px #d3dbe2
+      background-color: $dark-blue
+      border-right: solid 2px $light-blue
       border-right-width: 40px
       justify-content: flex-end
       width: 40px
@@ -24,21 +24,21 @@
         right: -13px
 
     &.skip
-      background: linear-gradient(to right, #d3dbe2 50%, white 50%)
+      background: linear-gradient(to right, $light-blue 50%, white 50%)
       background-size: 18px 1px
 
     &.done
-      background-color: #3a4959
+      background-color: $dark-blue
 
       .progress-bar-button
-        background-color: #3a4959
+        background-color: $dark-blue
         height: 20px
         top: -0.7em
         width: 20px
 
     .progress-bar-button, .skip-pseudo-button
       @extends $reset-button
-      background-color: #92a2b3
+      background-color: $medium-blue
       border-radius: 50%
       font-size: 0.8em
       color: white
@@ -52,7 +52,7 @@
         opacity: 1
 
     .skip-pseudo-button
-      background-color: #d3dbe2
+      background-color: $light-blue
       height: 20px
       text-align: center
       top: -0.7em

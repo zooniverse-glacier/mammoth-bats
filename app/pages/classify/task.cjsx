@@ -155,12 +155,12 @@ module.exports = React.createClass
   render: ->
     task = @props.workflow.tasks[@state.currentTask]
 
-    <div className="task-container">
+    <div className="tasks">
       <FieldGuide toDisplay={@state.hoveringOver} />
 
       {if @state.currentTask?
         if @state.currentTask isnt 'summary'
-          <div className="task">
+          <div className="task-individual">
             <p className="question">{task.question}</p>
             <ProgressBar
               currentTask={@state.currentTask}

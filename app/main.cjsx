@@ -11,18 +11,12 @@ MainFooter = require './partials/main-footer'
 
 Main = React.createClass
   displayName: "Main"
-  mixins: [Reflux.listenTo(userStore, 'onUserChange')]
-
-  getInitialState: ->
-    project: null
-
-  onUserChange: (user) ->
-    @setState { user }
+  mixins: [Reflux.connect(userStore, 'user')]
 
   render: ->
     <div className="main">
-      <MainHeader project={@state.project} user={@state.user} />
-      <RouteHandler project={@state.project} user={@state.user} />
+      <MainHeader user={@state.user} />
+      <RouteHandler user={@state.user} />
       <MainFooter />
     </div>
 

@@ -16,9 +16,8 @@ ClassifyStore = Reflux.createStore
   getInitialState: ->
     @data
 
-  loading: true
-
   getWorkflow: (@project = null) ->
+    console.log 'getting workflow'
     unless @project
       return throw new Error 'cannot fetch workflows for project'
 
@@ -27,6 +26,7 @@ ClassifyStore = Reflux.createStore
         @getNextSubject()
 
   getNextSubject: ->
+    console.log 'getNextSubject'
     query =
       workflow_id: @workflow.id
       sort: 'queued'
@@ -37,11 +37,12 @@ ClassifyStore = Reflux.createStore
           # handle empty subjects array
           return
 
-        randomInt = Math.floor(Math.random() * subjects.length) #random num 0-4
+        randomInt = Math.floor(Math.random() * subjects.length)
         subject = subjects[randomInt]
         @createNewClassification @workflow, subject
 
   createNewClassification: (workflow, subject) ->
+    console.log 'createNewClassification'
     classification = api.type('classifications').create
       annotations: [
         {key: workflowTaskKeys.first, task: workflow.tasks[workflowTaskKeys.first].question, value: 0}
@@ -65,13 +66,13 @@ ClassifyStore = Reflux.createStore
     @createStore(workflow, classification, subject)
 
   createStore: (workflow, classification, subject) ->
+    console.log 'createStore'
     @data =
       workflow: workflow
       subject: subject
       classification: classification
 
-    @loading = false
-
+    console.log 'data', @data
     @trigger @data
 
   onUpdateAnnotation: (updatedAnnotation) ->
@@ -94,7 +95,6 @@ ClassifyStore = Reflux.createStore
       .save()
       .then (classification) ->
         classification.destroy()
-        @loading = true
       .catch (error) ->
         console.log 'error saving c'
 
