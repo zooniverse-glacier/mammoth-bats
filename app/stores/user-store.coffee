@@ -1,5 +1,6 @@
 Reflux = require 'reflux'
 {client, api} = client = require '../api/bats-client'
+projectConfig = require '../lib/project-config'
 userActions = require '../actions/user-actions'
 
 checkStatus = (response) ->
@@ -30,7 +31,7 @@ module.exports = Reflux.createStore
     @getUser()
 
   getInitialState: ->
-    @user
+    @userData
 
   getUser: ->
     token = @_getToken()
@@ -44,11 +45,25 @@ module.exports = Reflux.createStore
       .then checkStatus
       .then parseJson
       .then (data) =>
-        @user = data.users[0]
-        @trigger @user
+        @getUserClassificationCount(data.users[0])
       .catch (error) =>
-        @user = null
-        @trigger @user
+        @userData = null
+        @trigger @userData
+
+  getUserClassificationCount: (user, _page = 1) ->
+    query =
+      user_id: user.id
+      project_id: projectConfig.projectId
+      page: _page
+    api.type('project_preferences').get(query).then ([projectPreferences]) =>
+      @createStore(user, projectPreferences)
+
+  createStore: (user, projectPreferences) ->
+    preferences = if projectPreferences? then projectPreferences else null
+    @userData =
+      user: user
+      projectPreferences: preferences
+    @trigger @userData
 
   signInUrl: (location = null) ->
     location ?= window.location
@@ -83,4 +98,3 @@ module.exports = Reflux.createStore
   _removeToken: ->
     api.headers['Authorization'] = null
     localStorage.removeItem 'bearer_token'
-

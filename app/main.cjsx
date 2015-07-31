@@ -11,12 +11,14 @@ MainFooter = require './partials/main-footer'
 
 Main = React.createClass
   displayName: "Main"
-  mixins: [Reflux.connect(userStore, 'user')]
+  mixins: [Reflux.connect(userStore, 'userData')]
 
   render: ->
+    user = if @state.userData?.user then @state.userData.user else null
+    userPreferences = if @state.userData?.projectPreferences then @state.userData.projectPreferences else null
     <div className="main">
-      <MainHeader user={@state.user} />
-      <RouteHandler user={@state.user} />
+      <MainHeader user={user} />
+      <RouteHandler user={user} userPreferences={userPreferences} />
       <MainFooter />
     </div>
 

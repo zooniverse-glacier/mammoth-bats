@@ -17,7 +17,6 @@ ClassifyStore = Reflux.createStore
     @data
 
   getWorkflow: (@project = null) ->
-    console.log 'getting workflow'
     unless @project
       return throw new Error 'cannot fetch workflows for project'
 
@@ -26,7 +25,6 @@ ClassifyStore = Reflux.createStore
         @getNextSubject()
 
   getNextSubject: ->
-    console.log 'getNextSubject'
     query =
       workflow_id: @workflow.id
       sort: 'queued'
@@ -42,7 +40,6 @@ ClassifyStore = Reflux.createStore
         @createNewClassification @workflow, subject
 
   createNewClassification: (workflow, subject) ->
-    console.log 'createNewClassification'
     classification = api.type('classifications').create
       annotations: [
         {key: workflowTaskKeys.first, task: workflow.tasks[workflowTaskKeys.first].question, value: 0}
@@ -66,13 +63,11 @@ ClassifyStore = Reflux.createStore
     @createStore(workflow, classification, subject)
 
   createStore: (workflow, classification, subject) ->
-    console.log 'createStore'
     @data =
       workflow: workflow
       subject: subject
       classification: classification
 
-    console.log 'data', @data
     @trigger @data
 
   onUpdateAnnotation: (updatedAnnotation) ->
@@ -96,7 +91,7 @@ ClassifyStore = Reflux.createStore
       .then (classification) ->
         classification.destroy()
       .catch (error) ->
-        console.log 'error saving c'
+        console.error 'error saving c'
 
   getAnnotationByKey: (key) ->
     _.find @data?.classification.annotations, (annotation) ->
