@@ -8,12 +8,11 @@ counterpart = require 'counterpart'
 counterpart.registerTranslations 'en',
   loginBar:
     signIn: 'Sign in'
-    register: 'Register'
 
 module.exports = React.createClass
   displayName: 'LoginBar'
 
   render: ->
     <div className="login-bar">
-      <a href={UserStore.signInUrl()}><button>Click to login</button></a>
+      <a href={UserStore.signInUrl()}><button className="secret-button"><Translate content="loginBar.signIn" /></button></a>
     </div>

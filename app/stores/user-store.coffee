@@ -58,11 +58,19 @@ module.exports = Reflux.createStore
     api.type('project_preferences').get(query).then ([projectPreferences]) =>
       @createStore(user, projectPreferences)
 
+  getUserAvatar: (user) ->
+    query:
+      user_id: user.id
+    console.log 'getUserAvatar', user
+    api.type('users').get(user.id).get('avatar').then ([avatar]) =>
+      avatar
+
   createStore: (user, projectPreferences) ->
-    preferences = if projectPreferences? then projectPreferences else null
+    console.log 'createStore', user, projectPreferences
     @userData =
       user: user
-      projectPreferences: preferences
+      projectPreferences: projectPreferences
+    console.log 'userData', @userData
     @trigger @userData
 
   signInUrl: (location = null) ->

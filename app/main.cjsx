@@ -14,8 +14,8 @@ Main = React.createClass
   mixins: [Reflux.connect(userStore, 'userData')]
 
   render: ->
-    user = if @state.userData?.user then @state.userData.user else null
-    userPreferences = if @state.userData?.projectPreferences then @state.userData.projectPreferences else null
+    user = if @state.userData?.user? then @state.userData.user else null
+    userPreferences = if @state.userData?.projectPreferences? then @state.userData.projectPreferences else null
     <div className="main">
       <MainHeader user={user} />
       <RouteHandler user={user} userPreferences={userPreferences} />

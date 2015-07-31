@@ -1,20 +1,50 @@
 .main-footer
-  align-items: center
-  background-color: $dark-blue
-  color: $medium-blue
-  display: flex
-  flex-direction: column
-  justify-content: center
-  padding: 3em 3vw
+  .main-footer-zooniverse-info
+    align-items: center
+    background-color: $dark-blue
+    color: $medium-blue
+    display: flex
+    flex-direction: column
+    justify-content: center
+    padding: 3em 3vw
 
-  .zooniverse-logo
-    font-size: 4em
+    .zooniverse-logo
+      font-size: 4em
 
-  .markdown
-    p
-      font-size: 1.2em
-      font-weight: 400
-      max-width: 40em
-      text-align: center
-      -moz-osx-font-smoothing: grayscale
-      -webkit-font-smoothing: antialiased
+    .markdown
+      p
+        font-size: 1.2em
+        font-weight: 400
+        max-width: 40em
+        text-align: center
+
+  .main-footer-social-media
+    background-color: #00181a
+    box-sizing: border-box
+    color: #808080
+    display: flex
+    font-size: 0.8em
+    justify-content: space-between
+    max-width: 2000px
+    padding: 0.25em 3vw
+    width: 100%
+
+    .markdown > p
+      line-height: 50px
+      margin: 0
+
+    .social-media-links
+      line-height: 50px
+
+      a
+        margin-left: 1.5em
+
+      span, i
+        vertical-align: middle
+
+    a
+      color: inherit
+      text-decoration: none
+
+      &:visited, &:active
+        color: inherit
