@@ -8,30 +8,32 @@
   position: absolute
   width: 100%
 
-  .main-header-logo-link
-    flex: 0 0 25px
-
-    .zooniverse-logo
-      color: white
+  .main-header-title-link
+    color: $medium-blue
+    // flex: 0 0 25px
+    font-weight: 700
+    margin-right: 3em
+    text-decoration: none
 
   .main-header-nav
     flex: 1 1 auto
 
     .main-header-link
       background-color: transparent
-      color: white
+      color: $medium-blue
+      margin-right: 3em
       padding: 0.5em 1em
       text-decoration: none
 
       &.active
-        border: solid 2px white
+        border: solid 2px $medium-blue
         border-radius: 15px
 
       &:hover
         background-color: lighten(#000000, 20%)
 
       &:visited
-        color: white
+        color: $medium-blue
 
   .account-bar
     align-items: center
