@@ -1,5 +1,77 @@
 .home-page
   color: white
-  margin: 0 auto
-  max-width: 1000px
-  padding: 10em 3vw
+
+  .home-content-container
+    margin: 0 auto
+    max-width: 1000px
+    padding: 10em 3vw
+
+  .home-hero
+    background: url('http://placehold.it/1600x1000/101010') no-repeat center center
+    background-size: cover
+    height: 1000px
+    width: 100%
+
+  .home-promo
+    background-color: #edf0f3
+    color: #374766
+
+    .home-content-container
+      display: flex
+      justify-content: space-around
+
+      img
+        border-radius: 50%
+
+      .markdown
+        align-self: center
+
+        h2
+          font-style: italic
+          text-transform: uppercase
+
+        p
+          color: #777777
+          font-size: 1.125em
+          max-width: 550px
+
+        a, &:visited, &:active
+          color: #374766
+          font-style: italic
+          text-decoration: none
+
+        a:before
+          background: url(./assets/arrow-icon.png) no-repeat center center
+          display: inline-block
+          content: ''
+          height: 16px
+          margin-right: 0.5em
+          vertical-align: text-top
+          width: 16px
+
+    &:nth-child(even)
+      img
+        order: 2
+
+  .home-call-to-action
+    align-items: center
+    background: url(./assets/placeholder-bat-img.jpg) no-repeat center center
+    background-size: cover
+    color: #f6f6f6
+    display: flex
+    flex-direction: column
+    height: 325px
+    justify-content: center
+    width: 100%
+
+    h2
+      letter-spacing: 0.1em
+      text-transform: uppercase
+
+    .home-call-to-action-button
+      @extends $reset-button
+
+      background-color: #182133
+      border-radius: 4px
+      line-height: 50px
+      width: 250px
