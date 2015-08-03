@@ -3,6 +3,7 @@ React = require 'react'
 counterpart = require 'counterpart'
 Translate = require 'react-translate-component'
 userActions = require '../actions/user-actions'
+userStore = require '../stores/user-store'
 
 counterpart.registerTranslations 'en',
   accountMenu:
@@ -14,10 +15,17 @@ counterpart.registerTranslations 'en',
 module.exports = React.createClass
   displayName: 'AccountBar'
 
+  getInitialState: ->
+    avatar: null
+
   componentDidMount: ->
     if @props.user?
-      avatar = userActions.getUserAvatar(@props.user)
-      console.log 'avatar', avatar
+      userStore.getUserAvatar(@props.user).then (avatar) =>
+        @setState avatar: avatar.src if avatar
+
+  componentWillReceiveProps: (nextProps) ->
+    if nextProps.user is null
+      @setState avatar: null
 
   handleSignOutClick: ->
     userActions.signOut()
@@ -27,6 +35,7 @@ module.exports = React.createClass
       <div className="account-info">
         <span className="display-name"><strong>{@props.user.display_name}</strong></span>
       </div>
+      <img className="account-avatar" src={if @state.avatar? then @state.avatar else './assets/simple-avatar.jpg'} alt="user avatar" />
       <button className="secret-button" type="button" onClick={@handleSignOutClick}>
         <Translate content="accountMenu.signOut" />
       </button>

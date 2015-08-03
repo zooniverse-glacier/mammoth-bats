@@ -61,16 +61,17 @@ module.exports = Reflux.createStore
   getUserAvatar: (user) ->
     query:
       user_id: user.id
-    console.log 'getUserAvatar', user
-    api.type('users').get(user.id).get('avatar').then ([avatar]) =>
-      avatar
+    api.type('users').get(user.id).get('avatar')
+      .then ([avatar]) ->
+        avatar
+      .catch (error) ->
+        avatar = null
+        avatar
 
   createStore: (user, projectPreferences) ->
-    console.log 'createStore', user, projectPreferences
     @userData =
-      user: user
-      projectPreferences: projectPreferences
-    console.log 'userData', @userData
+      user: if user? then user else null
+      projectPreferences: if projectPreferences? then projectPreferences else null
     @trigger @userData
 
   signInUrl: (location = null) ->

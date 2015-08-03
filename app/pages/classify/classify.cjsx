@@ -30,21 +30,16 @@ module.exports = React.createClass
     tutorialIsOpen: false
 
   componentDidMount: ->
-    console.log 'componentDidMount', @props
     if @props.user is null # Check specifically for null because setting prop as null if no user is returned. Avoids loading tutorial for the split second the props are undefined.
-      console.log 'componentDidMount user is null'
       @openTutorial()
 
     if @props.userPreferences is null #For logged in user, but has no classifications, thus has null user project preferences
-      console.log 'componentDidMount preferences is null'
       @openTutorial()
 
   componentWillReceiveProps: (nextProps) ->
     if nextProps.userPreferences?.activity_count is 0 or nextProps.userPreferences is null
-      console.log 'nextProps activity is 0 or preferences is null'
       @openTutorial()
     else if nextProps.user is null
-      console.log 'nextProps user is null'
       @openTutorial()
 
   onClickPlaybackRateButton: ({currentTarget}) ->
