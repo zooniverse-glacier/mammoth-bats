@@ -10,7 +10,6 @@
 
   .main-header-title-link
     color: $medium-blue
-    // flex: 0 0 25px
     font-weight: 700
     margin-right: 3em
     text-decoration: none
@@ -48,7 +47,8 @@
       width: calc(1em + 1.5vw)
 
   .login-bar
-    a, &:visited, &:active
-      color: white
-      text-decoration: none
+    color: white
+
+    a
+      @extends $reset-link
 

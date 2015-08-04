@@ -15,8 +15,47 @@
       p
         font-size: 1.2em
         font-weight: 400
-        max-width: 40em
+        max-width: 41em
         text-align: center
+
+    .footer-link-button
+      @extends $reset-button
+      border: solid 2px $medium-blue
+      border-radius: 4px
+      color: inherit
+      font-size: 0.9em
+      padding: 1em 0
+      text-align: center
+      width: 215px
+
+      &:hover
+        background-color: lighten($dark-blue, 10%)
+
+  .main-footer-projects-lists
+    background-color: #28323e
+    color: #00b5be
+    display: flex
+    justify-content: center
+    min-height: 175px
+    padding: 1em 3vw
+
+    .project-list-container
+      padding: 0 2em
+
+      h5
+        margin: 0
+
+      .project-list
+        list-style: none
+        font-size: 0.8em
+        margin: 0
+        padding: 0
+
+        li > a
+          @extends $reset-link
+
+          &:hover
+            color: lighten(#00b5be, 10%)
 
   .main-footer-social-media
     background-color: #00181a
@@ -43,8 +82,7 @@
         vertical-align: middle
 
     a
-      color: inherit
-      text-decoration: none
+      @extends $reset-link
 
-      &:visited, &:active
-        color: inherit
+      &:hover
+        color: lighten(#808080, 20%)

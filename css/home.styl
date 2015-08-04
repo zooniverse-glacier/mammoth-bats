@@ -35,17 +35,20 @@
           font-size: 1.125em
           max-width: 550px
 
-        a, &:visited, &:active
+        a, a&:visited, a&:active
           color: #374766
           font-style: italic
           text-decoration: none
+
+          &:hover
+            color: lighten(#374766, 20%)
 
         a:before
           background: url(./assets/arrow-icon.png) no-repeat center center
           display: inline-block
           content: ''
           height: 16px
-          margin-right: 0.5em
+          margin: 0.25em 0.5em 0 0
           vertical-align: text-top
           width: 16px
 
@@ -70,8 +73,10 @@
 
     .home-call-to-action-button
       @extends $reset-button
-
       background-color: #182133
       border-radius: 4px
       line-height: 50px
       width: 250px
+
+      &:hover
+        background-color: lighten(#182133, 10%)
