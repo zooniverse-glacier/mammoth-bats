@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-core": "^5.8.20",
+    "babel-loader": "^5.3.2",
     "cjsx-loader": "~2.0.1",
     "coffee-loader": "~0.7.2",
     "coffee-script": "~1.9.3",
@@ -34,16 +36,10 @@
     "webpack": "~1.10.1"
   },
   "dependencies": {
+    "babelify": "^6.1.3",
     "classnames": "~2.1.3",
     "counterpart": "~0.16.8",
-    "debounce": "^1.0.0",
-    "json-api-client": "~0.4.0",
-    "markdown-it": "~4.0.1",
-    "markdown-it-container": "~1.0.0",
-    "markdown-it-emoji": "~1.0.0",
-    "markdown-it-footnote": "~1.0.0",
-    "markdown-it-sub": "~1.0.0",
-    "markdown-it-sup": "~1.0.0",
+    "markdownz": "^1.0.2",
     "panoptes-client": "~0.1.1",
     "react": "0.13.3",
     "react-interpolate-component": "~0.7.1",
@@ -51,7 +47,6 @@
     "react-translate-component": "~0.9.0",
     "reflux": "~0.2.8",
     "tether": "HubSpot/tether#df8cd44",
-    "twemoji": "^1.4.1",
     "underscore": "^1.8.3"
   }
 }

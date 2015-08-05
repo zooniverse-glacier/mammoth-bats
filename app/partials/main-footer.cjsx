@@ -3,7 +3,7 @@ Translate = require 'react-translate-component'
 counterpart = require 'counterpart'
 {Link} = require 'react-router'
 ZooniverseLogo = require './zooniverse-logo'
-Markdown = require '../components/markdown'
+{Markdown} = require 'markdownz'
 LoadingIndicator = require '../components/loading-indicator'
 
 ProjectStore = require '../stores/project-store'
