@@ -1,5 +1,4 @@
 .main-header
-  align-items: center
   background-color: transparent
   box-sizing: border-box
   display: flex
@@ -8,17 +7,40 @@
   position: absolute
   width: 100%
 
+  @media screen and (max-width: 768px)
+    background-color: #3a4959
+
   .main-header-title-link
     color: $medium-blue
     font-weight: 700
     margin-right: 3em
     text-decoration: none
 
+    @media screen and (max-width: 768px)
+      margin: 0
+      text-align: center
+      width: 100%
+
+  .mobile-menu-button
+    @extends $reset-button
+    display: none
+    position: absolute
+    right: 1em
+    z-index: 2
+
+    @media screen and (max-width: 768px)
+      display: block
+
+    .menu-icon
+      width: 16px
+
   .main-header-nav
     flex: 1 1 auto
 
     .main-header-link
       background-color: transparent
+      border: solid 2px transparent
+      border-radius: 15px
       color: $medium-blue
       margin-right: 3em
       padding: 0.5em 1em
@@ -26,13 +48,39 @@
 
       &.active
         border: solid 2px $medium-blue
-        border-radius: 15px
 
-      &:hover
+      &:hover:not(.active)
         background-color: lighten(#000000, 20%)
+        border: solid 2px lighten(#000000, 20%)
 
       &:visited
         color: $medium-blue
+
+    @media screen and (max-width: 768px)
+      background-color: rgba(0,0,0,0.7)
+      display: block
+      height: 0
+      left: 0
+      padding: 0
+      position: absolute
+      top: 0
+      width: 100%
+      z-index: 2
+
+      .main-header-link, .login-bar
+        display: none
+
+      &.show-menu
+        height: 300px
+        padding: 80px 0 0
+
+        .main-header-link, .login-bar
+          display: block
+          margin: 17px auto
+          max-width: 100px
+          position: relative
+          text-align: center
+          z-index: 2
 
   .account-bar
     align-items: center
@@ -49,6 +97,16 @@
   .login-bar
     color: white
 
+  .login-bar, .account-bar
+    display: inline-block
+    float: right
+
+    @media screen and (max-width: 768px)
+      float: none
+
     a
       @extends $reset-link
+
+      &:hover
+        color: darken(white, 20%)
 

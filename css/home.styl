@@ -18,7 +18,11 @@
 
     .home-content-container
       display: flex
+      flex-wrap: wrap
       justify-content: space-around
+
+      @media screen and (max-width: 900px)
+        flex-wrap: wrap
 
       img
         border-radius: 50%
@@ -55,6 +59,9 @@
     &:nth-child(even)
       img
         order: 2
+
+        @media screen and (max-width: 900px)
+          order: initial
 
   .home-call-to-action
     align-items: center

@@ -100,7 +100,6 @@ module.exports = React.createClass
               type="video/mp4"
               width="100%"
               height="100%"
-              style={minHeight: "581px"}
               onload={@onVideoLoad()}
             >
               Your browser does not support the video format. Please upgrade your browser.
