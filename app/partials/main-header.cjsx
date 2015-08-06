@@ -36,12 +36,16 @@ module.exports = React.createClass
 
   render: ->
     <header className="main-header">
-      <Link className="main-header-title-link" to="root"><Translate content="mainHeader.title" /></Link>
+      <div className="main-header-title-container">
+        <Link className="main-header-title-link" to="root"><Translate content="mainHeader.title" /></Link>
+      </div>
       <nav ref="mainHeaderNav" className="main-header-nav">
-        <Link to="classify" className="main-header-link"><Translate content="mainHeader.links.classify" /></Link>
-        <Link to="about" className="main-header-link"><Translate content="mainHeader.links.about" /></Link>
-        <a className="main-header-link" href="#" target="_blank"><Translate content="mainHeader.links.discuss" /></a>
-        <a className="main-header-link" href="#" target="_blank"><Translate content="mainHeader.links.blog" /></a>
+        <div className="main-header-nav-link-container">
+          <Link to="classify" className="main-header-link"><Translate content="mainHeader.links.classify" /></Link>
+          <Link to="about" className="main-header-link"><Translate content="mainHeader.links.about" /></Link>
+          <a className="main-header-link" href="#" target="_blank"><Translate content="mainHeader.links.discuss" /></a>
+          <a className="main-header-link" href="#" target="_blank"><Translate content="mainHeader.links.blog" /></a>
+        </div>
         {if @props.user
           <AccountBar user={@props.user} />
         else

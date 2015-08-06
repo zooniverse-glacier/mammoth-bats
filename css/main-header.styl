@@ -1,4 +1,5 @@
 .main-header
+  align-items: center
   background-color: transparent
   box-sizing: border-box
   display: flex
@@ -10,16 +11,21 @@
   @media screen and (max-width: 768px)
     background-color: #3a4959
 
+    .main-header-title-container
+      text-align: center
+      width: 100%
+
   .main-header-title-link
     color: $medium-blue
     font-weight: 700
     margin-right: 3em
+    position: relative
     text-decoration: none
+    white-space: nowrap
+    z-index: 3
 
     @media screen and (max-width: 768px)
       margin: 0
-      text-align: center
-      width: 100%
 
   .mobile-menu-button
     @extends $reset-button
@@ -35,11 +41,22 @@
       width: 16px
 
   .main-header-nav
+    align-items: center
+    display: flex
     flex: 1 1 auto
+
+    .main-header-nav-link-container
+      display: inline-flex
+      flex: 1 1 auto
+
+      @media screen and (max-width: 768px)
+        align-items: flex-start
+        flex-direction: column
+        justify-content: space-around
+        order: 2
 
     .main-header-link
       background-color: transparent
-      border: solid 2px transparent
       border-radius: 15px
       color: $medium-blue
       margin-right: 3em
@@ -47,58 +64,85 @@
       text-decoration: none
 
       &.active
-        border: solid 2px $medium-blue
+        background-color: rgba(255, 255, 255, 0.1)
 
       &:hover:not(.active)
-        background-color: lighten(#000000, 20%)
-        border: solid 2px lighten(#000000, 20%)
+        background-color: rgba(255, 255, 255, 0.1)
 
       &:visited
         color: $medium-blue
 
+      &:last-of-type
+        margin-right: 0
+
+      @media screen and (max-width: 768px)
+        color: white
+
+        &:visited
+          color: white
+
     @media screen and (max-width: 768px)
-      background-color: rgba(0,0,0,0.7)
-      display: block
+      align-items: flex-start
+      background-color: rgba(58, 73, 89, 0.95)
       height: 0
       left: 0
+      opacity: 0
       padding: 0
       position: absolute
+      transition: height .5s, opacity .25s ease-in-out
       top: 0
       width: 100%
       z-index: 2
 
-      .main-header-link, .login-bar
+      .main-header-link, .login-bar, .account-bar
         display: none
 
       &.show-menu
+        box-sizing: border-box
+        display: flex
+        flex-direction: column
         height: 300px
-        padding: 80px 0 0
+        opacity: 1
+        padding: 80px 1em 0
 
         .main-header-link, .login-bar
           display: block
-          margin: 17px auto
           max-width: 100px
           position: relative
           text-align: center
           z-index: 2
+
+        .account-bar
+          display: flex
+          order: 1
 
   .account-bar
     align-items: center
     color: white
     display: flex
 
-    .account-avatar
-      border-radius: 50%
-      height: calc(1em + 1.5vw)
-      margin: 0 1em
-      vertical-align: middle
-      width: calc(1em + 1.5vw)
+    @media screen and (max-width: 768px)
+      justify-content: space-between
+
+    .account-info
+      .display-name
+        vertical-align: middle
+
+      .account-avatar
+        border-radius: 50%
+        height: calc(1em + 1.5vw)
+        margin: 0 1em
+        vertical-align: middle
+        width: calc(1em + 1.5vw)
+
+        @media screen and (max-width: 768px)
+          float: left
 
   .login-bar
     color: white
+    display: inline-block
 
   .login-bar, .account-bar
-    display: inline-block
     float: right
 
     @media screen and (max-width: 768px)

@@ -34,8 +34,8 @@ module.exports = React.createClass
     <div className="account-bar">
       <div className="account-info">
         <span className="display-name"><strong>{@props.user.display_name}</strong></span>
+        <img className="account-avatar" src={if @state.avatar? then @state.avatar else './assets/simple-avatar.jpg'} alt="user avatar" />
       </div>
-      <img className="account-avatar" src={if @state.avatar? then @state.avatar else './assets/simple-avatar.jpg'} alt="user avatar" />
       <button className="secret-button" type="button" onClick={@handleSignOutClick}>
         <Translate content="accountMenu.signOut" />
       </button>
