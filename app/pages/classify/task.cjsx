@@ -146,6 +146,7 @@ module.exports = React.createClass
     @showTask 'summary'
 
   onClickNextVideo: ->
+    @props.clearClassificationData()
     classifyActions.getNextSubject()
     @showTask workflowTaskKeys.first
 

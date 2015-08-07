@@ -8,9 +8,15 @@
   .loading-indicator-container
     align-items: center
     display: flex
+    left: 0
     justify-content: center
     height: 100%
+    max-width: 800px
     min-height: 581px
+    position: absolute
+    top: 0
+    width: 100%
+    z-index: 1
 
     .loading-indicator-icon
       color: white
@@ -35,6 +41,7 @@
       flex: 1 1 auto
       max-width: 800px
       min-width: 320px
+      position: relative
       width: 100%
 
       @media screen and (max-width: 900px)
@@ -97,15 +104,16 @@
     .task-container
       background-color: white
       border-radius: 0 6px 6px 0
-      box-sizing: border-box
       flex: 1 1 auto
       max-width: 350px
       min-width: 320px
       padding: 1em
+      position: relative
       width: 100%
 
       @media screen and (max-width: 900px)
         border-radius: 0 0 6px 6px
+        box-sizing: border-box
         max-width: 800px
 
       .loading-indicator-icon

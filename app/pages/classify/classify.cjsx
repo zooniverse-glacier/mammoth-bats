@@ -23,8 +23,6 @@ module.exports = React.createClass
   displayName: "Classify"
   mixins: [Reflux.connect(classifyStore, 'classificationData')]
 
-  videoLoaded: false
-
   getInitialState: ->
     playbackRate: 1
     tutorialIsOpen: false
@@ -64,15 +62,14 @@ module.exports = React.createClass
     annotation = key: key, value: answer
     classifyActions.updateAnnotation annotation
 
-  onVideoLoad: ->
-    @videoLoaded = true
-    # to do: break video out into own component and manage loading state
-
   openTutorial: ->
     @setState tutorialIsOpen: true
 
   closeTutorial: ->
     @setState tutorialIsOpen: false
+
+  clearClassificationData: ->
+    @setState classificationData: null
 
   render: ->
     activePlaybackRateStyle = {backgroundColor: "#92a2b3", color: "black", border: "solid 2px transparent"}
@@ -87,7 +84,7 @@ module.exports = React.createClass
         <SlideTutorial closeTutorial={@closeTutorial} tutorialIsOpen={@state.tutorialIsOpen} />}
       <div className="classification">
         <section className="subject">
-          {if @videoLoaded is false
+          {unless @state.classificationData?.classification?
             <div className="loading-indicator-container">
               <LoadingIndicator />
             </div>}
@@ -100,7 +97,6 @@ module.exports = React.createClass
               type="video/mp4"
               width="100%"
               height="100%"
-              onload={@onVideoLoad()}
             >
               Your browser does not support the video format. Please upgrade your browser.
             </video>
@@ -130,6 +126,7 @@ module.exports = React.createClass
               annotations={@state.classificationData?.classification.annotations}
               storeSelection={@storeSelection}
               storeMultipleSelection={@storeMultipleSelection}
+              clearClassificationData={@clearClassificationData}
               user={@props.user}
             />
           else
