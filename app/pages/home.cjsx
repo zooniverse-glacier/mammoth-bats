@@ -2,9 +2,18 @@ React = require 'react'
 counterpart = require 'counterpart'
 Translate = require 'react-translate-component'
 {Markdown} = require 'markdownz'
+{Link} = require 'react-router'
 
 counterpart.registerTranslations 'en',
   homePage:
+    hero:
+      tagline: '''
+        # Tagline header
+
+        Additional tagline.
+      '''
+    getStarted: 'Get Started!'
+    learnMore: 'Learn More'
     promoSections:
       one:
         image:
@@ -49,7 +58,11 @@ module.exports = React.createClass
     pitchSections = counterpart 'homePage.promoSections'
     <div className="home-page">
       <section className="home-hero">
-        <div className="home-content-container"><h1>Mammoth Bats</h1></div>
+        <div className="home-content-container">
+          <Markdown>{counterpart "homePage.hero.tagline"}</Markdown>
+          <Link to="classify" className="home-call-to-action-button"><Translate content="homePage.getStarted" /></Link>
+          <Link to="about" className="home-call-to-action-button ghost-button"><Translate content="homePage.learnMore" /></Link>
+        </div>
       </section>
       {for key, section of pitchSections
         <section key={key} className="home-promo">
@@ -60,6 +73,8 @@ module.exports = React.createClass
         </section>}
       <section className="home-call-to-action">
         <Translate component="h2" content="homePage.callToAction.header" />
-        <button className="home-call-to-action-button" type="button">{counterpart "homePage.callToAction.button"}</button>
+        <Link to="classify" className="home-call-to-action-button">
+          <Translate content="homePage.getStarted" />
+        </Link>
       </section>
     </div>

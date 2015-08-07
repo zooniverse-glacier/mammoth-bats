@@ -5,13 +5,42 @@
     margin: 0 auto
     max-width: 1000px
     padding: 10em 3vw
-
+    
+  .home-call-to-action-button
+    @extends $reset-button
+    border-radius: 4px
+    line-height: 50px
+    text-align: center
+    width: 250px
+  
   .home-hero
     background: url('http://placehold.it/1600x1000/101010') no-repeat center center
     background-size: cover
     height: 1000px
+    text-align: center
     width: 100%
-
+    
+    .home-content-container
+      align-items: center
+      display: flex
+      flex-direction: column
+      justify-content: center
+    
+    .home-call-to-action-button
+      background-color: #c5c64e
+      border: solid 2px #c5c64e
+      margin-bottom: 1em
+      
+      &.ghost-button
+        background-color: transparent
+        border: solid 2px $medium-blue
+        
+        &:hover
+          background-color: lighten(black, 20%)
+        
+      &:hover
+        background-color: lighten(#c5c64e, 10%)
+          
   .home-promo
     background-color: #edf0f3
     color: #374766
@@ -77,13 +106,11 @@
     h2
       letter-spacing: 0.1em
       text-transform: uppercase
-
+      
     .home-call-to-action-button
-      @extends $reset-button
       background-color: #182133
-      border-radius: 4px
-      line-height: 50px
-      width: 250px
-
+      
       &:hover
         background-color: lighten(#182133, 10%)
+
+
