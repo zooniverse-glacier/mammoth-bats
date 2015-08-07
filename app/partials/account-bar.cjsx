@@ -11,6 +11,7 @@ counterpart.registerTranslations 'en',
     settings: 'Settings'
     signOut: 'Sign Out'
     collections: 'Collections'
+    close: 'Close'
 
 module.exports = React.createClass
   displayName: 'AccountBar'
@@ -36,7 +37,7 @@ module.exports = React.createClass
         <span className="display-name"><strong>{@props.user.display_name}</strong></span>
         <img className="account-avatar" src={if @state.avatar? then @state.avatar else './assets/simple-avatar.jpg'} alt="user avatar" />
       </div>
-      <button className="secret-button" type="button" onClick={@handleSignOutClick}>
+      <button className="secret-button sign-out-button" type="button" onClick={@handleSignOutClick}>
         <Translate content="accountMenu.signOut" />
       </button>
     </div>

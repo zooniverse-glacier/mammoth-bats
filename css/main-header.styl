@@ -36,10 +36,26 @@
 
     @media screen and (max-width: 768px)
       display: block
+      
+      &.close-button
+        background-color: #2b3743
+        height: 50px
+        top: 0
+        right: 0
+        width: 50px
 
     .menu-icon
       width: 16px
-
+      
+  .close-button-title
+    color: rgba(255,255,255,0.5)
+    display: none
+    font-size: 0.8em
+    font-style: italic
+    position: relative
+    right: 50px
+    z-index: 2
+    
   .main-header-nav
     align-items: center
     display: flex
@@ -53,6 +69,7 @@
         align-items: flex-start
         flex-direction: column
         justify-content: space-around
+        max-height: 300px
         order: 2
 
     .main-header-link
@@ -94,53 +111,33 @@
       width: 100%
       z-index: 2
 
-      .main-header-link, .login-bar, .account-bar
+      .main-header-link
         display: none
 
       &.show-menu
         box-sizing: border-box
         display: flex
         flex-direction: column
-        height: 300px
+        height: 100vh
+        max-height: 625px
         opacity: 1
         padding: 80px 1em 0
 
-        .main-header-link, .login-bar
+        .main-header-link
           display: block
           max-width: 100px
           position: relative
           text-align: center
           z-index: 2
-
+          
+        .login-bar, .account-bar
+          opacity: 1
+          
         .account-bar
           display: flex
-          order: 1
-
-  .account-bar
-    align-items: center
-    color: white
-    display: flex
-
-    @media screen and (max-width: 768px)
-      justify-content: space-between
-
-    .account-info
-      .display-name
-        vertical-align: middle
-
-      .account-avatar
-        border-radius: 50%
-        height: calc(1em + 1.5vw)
-        margin: 0 1em
-        vertical-align: middle
-        width: calc(1em + 1.5vw)
-
-        @media screen and (max-width: 768px)
-          float: left
-
-  .login-bar
-    color: white
-    display: inline-block
+          
+        .login-bar
+          display: block
 
   .login-bar, .account-bar
     float: right
@@ -154,3 +151,43 @@
       &:hover
         color: darken(white, 20%)
 
+  .account-bar
+    align-items: center
+    color: white
+    display: flex
+
+    @media screen and (max-width: 768px)
+      display: none
+      justify-content: space-between
+      margin-bottom: 4em
+      order: 1
+      width: 100%
+
+      .sign-out-button
+        color: rgba(255,255,255,0.5)
+        font-size: 0.8em
+
+    .account-info
+      .display-name
+        line-height: 40px
+
+      .account-avatar
+        border-radius: 50%
+        margin: 0 1em
+        vertical-align: middle
+        width: 40px
+
+        @media screen and (max-width: 768px)
+          float: left
+
+  .login-bar
+    color: white
+    display: inline-block
+    
+    @media screen and (max-width: 768px)
+      display: none
+      max-width: 100px
+      padding: 1em
+      position: relative
+      text-align: center
+      z-index: 2      

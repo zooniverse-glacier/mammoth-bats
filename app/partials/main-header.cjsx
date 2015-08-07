@@ -30,9 +30,22 @@ module.exports = React.createClass
 
   toggleMenu: ->
     mainHeaderNav = React.findDOMNode(@refs.mainHeaderNav)
+    mobileButtonIcon = React.findDOMNode(@refs.mobileButtonIcon)
+    mobileMenuButton = React.findDOMNode(@refs.mobileMenuButton)
+    closeButtonTitle = React.findDOMNode(@refs.closeButtonTitle)
 
     mainHeaderNav.classList.toggle 'show-menu'
-    return # to get rid of the annoying react warning
+
+    if mainHeaderNav.classList.contains 'show-menu'
+      mobileButtonIcon.src = "./assets/ex-icon.svg" 
+      mobileMenuButton.classList.add 'close-button'
+      closeButtonTitle.style.display = 'inline-block'
+    else
+      mobileButtonIcon.src = "./assets/mobile-menu.svg"
+      mobileMenuButton.classList.remove 'close-button'
+      closeButtonTitle.style.display = 'none'
+
+    return null # to get rid of the annoying react warning
 
   render: ->
     <header className="main-header">
@@ -51,9 +64,8 @@ module.exports = React.createClass
         else
           <LoginBar project={@props.project} />}
       </nav>
-
-
-      <button className="mobile-menu-button" type="button" onClick={@toggleMenu}>
-        <img className="menu-icon" src="./assets/mobile-menu.svg" alt="menu" />
+      <span ref="closeButtonTitle" className="close-button-title"><Translate content="accountMenu.close"/></span>
+      <button ref="mobileMenuButton" className="mobile-menu-button" type="button" onClick={@toggleMenu}>
+        <img ref="mobileButtonIcon" className="menu-icon" src="./assets/mobile-menu.svg" alt="menu" />
       </button>
     </header>
