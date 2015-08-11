@@ -84,6 +84,7 @@ module.exports = React.createClass
     if taskType is "multiple"
       @props.storeMultipleSelection @state.currentTask, answer
       @setOptionsState(event.target) if @state.currentTask is workflowTaskKeys.third # Add animal step
+      @forceUpdate() # Force DOM to update immediately instead of after mouseout.
     else if taskType is "single"
       @props.storeSelection @state.currentTask, answer
 
@@ -171,7 +172,7 @@ module.exports = React.createClass
               when "multiple"
                 <div className="task-checkbox-container">
                   {for answer in task.answers
-                    <label key={answer.label} onMouseOver={@handleHover.bind null, camelize answer.label} onMouseOut={@handleHover.bind null, null} className="task-checkbox">
+                    <label key={answer.label} className="task-checkbox" onMouseOver={if window.innerWidth > 768 then @handleHover.bind null, camelize answer.label} onMouseOut={@handleHover.bind null, null if window.innerWidth > 768}>
                       <input type="checkbox" name={task.question} value={answer.label} onClick={@handleClick.bind(null, task.question, answer.label, task.type)} />
                       {answer.label}
                     </label>}

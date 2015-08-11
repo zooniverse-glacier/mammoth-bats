@@ -5,6 +5,9 @@
   @media screen and (max-width: 900px)
     padding: 10em 0
 
+  @media screen and (max-width: 400px)
+    padding: 6em 0 10em
+
   .loading-indicator-container
     align-items: center
     display: flex
@@ -38,7 +41,6 @@
       border-bottom-left-radius: 6px
       border-top-left-radius: 6px
       display: inline-flex
-      flex: 1 1 auto
       max-width: 800px
       min-width: 320px
       position: relative
@@ -46,6 +48,11 @@
 
       @media screen and (max-width: 900px)
         border-radius: 6px
+        height: 100%
+        min-height: 300px
+
+      @media screen and (max-width: 400px)
+        min-height: 33vh
 
       .video-container
         display: inline-flex
@@ -62,7 +69,7 @@
 
           @media screen and (max-width: 900px)
             border-radius: 6px 6px 0 0
-            min-height: 100%
+            min-height: 33vh
 
         .playback-rate-controls
           bottom: -2em
@@ -104,7 +111,6 @@
     .task-container
       background-color: white
       border-radius: 0 6px 6px 0
-      flex: 1 1 auto
       max-width: 350px
       min-width: 320px
       padding: 1em
@@ -114,7 +120,9 @@
       @media screen and (max-width: 900px)
         border-radius: 0 0 6px 6px
         box-sizing: border-box
+        height: 100%
         max-width: 800px
+        min-height: 550px
 
       .loading-indicator-icon
         color: black
